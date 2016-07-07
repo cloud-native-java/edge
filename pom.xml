@@ -11,9 +11,14 @@
         <artifactId>parent</artifactId>
         <version>1.0.0-SNAPSHOT</version>
         <relativePath/>
-
     </parent>
 
-
+    <modules>
+        <module>circuit-breakers</module>
+        <module>downstream-service</module>
+        <module>eureka-service</module>
+        <module>routing</module>
+        <module>security</module>
+    </modules>
 
 </project>
