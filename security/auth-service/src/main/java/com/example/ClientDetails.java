@@ -12,20 +12,28 @@ public class ClientDetails {
 	private Long id;
 
 	private String clientId, secret;
-	private String scopes, authorizedGrantTypes; // todo some way to store arrays?
+	private String scopes, authorizedGrantTypes;
+	private String authorities = "ROLE_USER,ROLE_ADMIN";
 
-	public ClientDetails(
-			String clientId,
-			String secret,
-			String scopes,
-			String authorizedGrantTypes) {
+	public ClientDetails(String clientId, String secret, String scopes,
+	                     String authorizedGrantTypes) {
 		this.clientId = clientId;
 		this.secret = secret;
 		this.scopes = scopes;
 		this.authorizedGrantTypes = authorizedGrantTypes;
 	}
 
+	public ClientDetails(String clientId, String secret, String scopes,
+	                     String authorizedGrantTypes, String authorities) {
+		this(clientId, secret, scopes, authorizedGrantTypes);
+		this.authorities = authorities;
+	}
+
 	ClientDetails() {
+	}
+
+	public String getAuthorities() {
+		return authorities;
 	}
 
 	public Long getId() {

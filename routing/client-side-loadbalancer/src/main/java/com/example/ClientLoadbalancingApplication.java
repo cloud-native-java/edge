@@ -12,4 +12,3 @@ public class ClientLoadbalancingApplication {
 		SpringApplication.run(ClientLoadbalancingApplication.class, args);
 	}
 }
-

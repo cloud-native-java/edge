@@ -31,7 +31,8 @@ public class DiscoveryClientCLR implements CommandLineRunner {
 		// <3>
 		String serviceId = "greetings-service";
 		this.log.info(String.format("registered instances of '%s'", serviceId));
-		this.discoveryClient.getInstances(serviceId).forEach(this::logServiceInstance);
+		this.discoveryClient.getInstances(serviceId).forEach(
+				this::logServiceInstance);
 	}
 
 	private void logServiceInstance(ServiceInstance si) {

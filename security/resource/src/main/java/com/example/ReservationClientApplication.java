@@ -52,29 +52,25 @@ class ReservationApiGatewayRestController {
 		this.restTemplate = restTemplate;
 	}
 
-	public Collection<String> fallback (){
-		return new ArrayList<>() ;
+	public Collection<String> fallback() {
+		return new ArrayList<>();
 	}
 
-	@HystrixCommand (fallbackMethod = "fallback")
+	@HystrixCommand(fallbackMethod = "fallback")
 	@RequestMapping(method = RequestMethod.GET, value = "/names")
 	public Collection<String> names() {
 
-		ParameterizedTypeReference<Resources<Reservation>> ptr =
-				new ParameterizedTypeReference<Resources<Reservation>>() {
-				};
+		ParameterizedTypeReference<Resources<Reservation>> ptr = new ParameterizedTypeReference<Resources<Reservation>>() {
+		};
 
 		ResponseEntity<Resources<Reservation>> exchange = this.restTemplate
-				.exchange("http://reservation-service/reservations", HttpMethod.GET, null, ptr);
+				.exchange("http://reservation-service/reservations",
+						HttpMethod.GET, null, ptr);
 
-		return exchange
-				.getBody()
-				.getContent()
-				.stream()
+		return exchange.getBody().getContent().stream()
 				.map(Reservation::getReservationName)
 				.collect(Collectors.toList());
 	}
-
 
 }
 

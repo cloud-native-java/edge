@@ -11,7 +11,8 @@ import org.springframework.security.oauth2.config.annotation.web.configurers.Aut
 // <1>
 @EnableAuthorizationServer
 @Configuration
-class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
+class AuthorizationServerConfiguration
+		extends AuthorizationServerConfigurerAdapter {
 
 	@Autowired
 	private AuthenticationManager authenticationManager;
@@ -22,9 +23,14 @@ class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdap
 	@Override
 	public void configure(ClientDetailsServiceConfigurer clients)
 			throws Exception {
-		clients
-				.inMemory()
-				.clients(this.jpaClientDetailsService);
+		//clients.inMemory().clients(this.jpaClientDetailsService);
+		//clients.withClientDetails(this.jpaClientDetailsService);
+		clients.inMemory()
+				.withClient("acme")
+				.secret("acmesecret")
+				.scopes("openid")
+				.authorizedGrantTypes("password");
+
 	}
 
 	@Override

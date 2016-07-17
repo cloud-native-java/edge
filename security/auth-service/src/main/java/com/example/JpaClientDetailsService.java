@@ -13,7 +13,8 @@ public class JpaClientDetailsService implements ClientDetailsService {
 	private final ClientDetailsRepository clientDetailsRepository;
 
 	@Autowired
-	public JpaClientDetailsService(ClientDetailsRepository clientDetailsRepository) {
+	public JpaClientDetailsService(
+			ClientDetailsRepository clientDetailsRepository) {
 		this.clientDetailsRepository = clientDetailsRepository;
 	}
 
@@ -22,17 +23,17 @@ public class JpaClientDetailsService implements ClientDetailsService {
 			throws ClientRegistrationException {
 
 		// <1>
-		return this.clientDetailsRepository
-				.findByClientId(clientId)
+		return this.clientDetailsRepository.findByClientId(clientId)
 				// <2>
 				.map(cd -> new BaseClientDetails(
 						cd.getClientId(),
 						null,
 						cd.getScopes(),
 						cd.getAuthorizedGrantTypes(),
-						null))
+						cd.getAuthorities()))
 				// <2>
-				.orElseThrow(() -> new ClientRegistrationException(
-						String.format("no client %s registered", clientId)));
+				.orElseThrow(
+						() -> new ClientRegistrationException(String.format(
+								"no client %s registered", clientId)));
 	}
 }

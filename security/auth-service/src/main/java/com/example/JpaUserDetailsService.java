@@ -23,17 +23,19 @@ class JpaUserDetailsService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username)
 			throws UsernameNotFoundException {
 
-		return this.accountRepository.findByUsername(username)
+		return this.accountRepository
+				.findByUsername(username)
 				.map(account -> {
 
 					boolean active = account.isActive();
 
-					return new User(
-							account.getUsername(),
-							account.getPassword(),
-							active, active, active, active,
-							AuthorityUtils.createAuthorityList("ROLE_ADMIN", "ROLE_USER"));
+					return new User(account.getUsername(), account
+							.getPassword(), active, active, active, active,
+							AuthorityUtils.createAuthorityList("ROLE_ADMIN",
+									"ROLE_USER"));
 				})
-				.orElseThrow(() -> new UsernameNotFoundException("username not found!"));
+				.orElseThrow(
+						() -> new UsernameNotFoundException(
+								"username not found!"));
 	}
 }

@@ -14,7 +14,7 @@ public class Account {
 
 	private String username, password; // <2>
 
-	private boolean active;  // <3>
+	private boolean active; // <3>
 
 	Account() {
 	}
