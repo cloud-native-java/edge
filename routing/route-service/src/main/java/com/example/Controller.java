@@ -15,11 +15,11 @@ import java.net.URI;
 @RestController
 class Controller {
 
-	static final String FORWARDED_URL = "X-CF-Forwarded-Url";
+	private static final String FORWARDED_URL = "X-CF-Forwarded-Url";
 
-	static final String PROXY_METADATA = "X-CF-Proxy-Metadata";
+	private static final String PROXY_METADATA = "X-CF-Proxy-Metadata";
 
-	static final String PROXY_SIGNATURE = "X-CF-Proxy-Signature";
+	private static final String PROXY_SIGNATURE = "X-CF-Proxy-Signature";
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 

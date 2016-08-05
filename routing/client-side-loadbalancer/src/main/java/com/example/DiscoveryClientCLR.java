@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 public class DiscoveryClientCLR implements CommandLineRunner {
 
 	private final DiscoveryClient discoveryClient;
-
 	private Log log = LogFactory.getLog(getClass());
 
 	// <1>

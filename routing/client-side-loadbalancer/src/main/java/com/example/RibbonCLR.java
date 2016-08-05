@@ -31,7 +31,8 @@ public class RibbonCLR implements CommandLineRunner {
 		String serviceId = "greetings-service";
 
 		// <1>
-		List<Server> servers = this.discoveryClient.getInstances(serviceId)
+		List<Server> servers = this.discoveryClient
+				.getInstances(serviceId)
 				.stream().map(si -> new Server(si.getHost(), si.getPort()))
 				.collect(Collectors.toList());
 

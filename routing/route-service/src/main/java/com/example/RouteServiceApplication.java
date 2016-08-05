@@ -20,19 +20,18 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 
 /**
- *
- Next, create a user provided service that contains the route service
+ * Next, create a user provided service that contains the route service
  * configuration information. To do this, run the following command,
  * substituting the address that the route service is listening on: ```bash $ cf
  * create-user-provided-service test-route-service -r
  * https://<ROUTE-SERVICE-ADDRESS> ```
- * 
+ * <p>
  * The next step assumes that you have an application already running that you'd
  * like to bind this route service to. To do this, run the following command,
  * substituting the domain and hostname bound to that application: ```bash $ cf
  * bind-route-service <APPLICATION-DOMAIN> test-route-service --hostname
  * <APPLICATION-HOST> ```
- * 
+ * <p>
  * In order to view the interception of the requests, you will need to stream
  * the logs of the route service. To do this, run the following command: ```bash
  * $ cf logs route-service-example ```
@@ -40,93 +39,89 @@ import java.security.cert.X509Certificate;
 @SpringBootApplication
 public class RouteServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(RouteServiceApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(RouteServiceApplication.class, args);
+    }
 
-	@Bean
-	RestOperations restOperations() {
-		RestTemplate restTemplate = new RestTemplate(
-				new TrustEverythingClientHttpRequestFactory());
-		restTemplate.setErrorHandler(new NoErrorsResponseErrorHandler());
-		return restTemplate;
-	}
+    @Bean
+    RestOperations restOperations() {
+        RestTemplate restTemplate = new RestTemplate(
+                new TrustEverythingClientHttpRequestFactory());
+        restTemplate.setErrorHandler(new NoErrorsResponseErrorHandler());
+        return restTemplate;
+    }
 
-	private static final class NoErrorsResponseErrorHandler
-			extends
-				DefaultResponseErrorHandler {
+    private static final class NoErrorsResponseErrorHandler
+        extends DefaultResponseErrorHandler {
 
-		@Override
-		public boolean hasError(ClientHttpResponse response) throws IOException {
-			return false;
-		}
+        @Override
+        public boolean hasError(ClientHttpResponse response) throws IOException {
+            return false;
+        }
 
-	}
+    }
 
-	private static final class TrustEverythingClientHttpRequestFactory
-			extends
-				SimpleClientHttpRequestFactory {
+    private static final class TrustEverythingClientHttpRequestFactory
+            extends SimpleClientHttpRequestFactory {
 
-		@Override
-		protected HttpURLConnection openConnection(URL url, Proxy proxy)
-				throws IOException {
-			HttpURLConnection connection = super.openConnection(url, proxy);
+        @Override
+        protected HttpURLConnection openConnection(URL url, Proxy proxy)
+                throws IOException {
+            HttpURLConnection connection = super.openConnection(url, proxy);
 
-			if (connection instanceof HttpsURLConnection) {
-				HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
+            if (connection instanceof HttpsURLConnection) {
+                HttpsURLConnection httpsConnection = (HttpsURLConnection) connection;
 
-				httpsConnection.setSSLSocketFactory(getSslContext(
-						new TrustEverythingTrustManager()).getSocketFactory());
-				httpsConnection
-						.setHostnameVerifier(new TrustEverythingHostNameVerifier());
-			}
+                httpsConnection.setSSLSocketFactory(getSslContext(
+                        new TrustEverythingTrustManager()).getSocketFactory());
+                httpsConnection
+                        .setHostnameVerifier(new TrustEverythingHostNameVerifier());
+            }
 
-			return connection;
-		}
+            return connection;
+        }
 
-		private static SSLContext getSslContext(TrustManager trustManager) {
-			try {
-				SSLContext sslContext = SSLContext.getInstance("SSL");
-				sslContext.init(null, new TrustManager[]{trustManager}, null);
-				return sslContext;
-			} catch (KeyManagementException | NoSuchAlgorithmException e) {
-				throw new RuntimeException(e);
+        private static SSLContext getSslContext(TrustManager trustManager) {
+            try {
+                SSLContext sslContext = SSLContext.getInstance("SSL");
+                sslContext.init(null, new TrustManager[]{trustManager}, null);
+                return sslContext;
+            } catch (KeyManagementException | NoSuchAlgorithmException e) {
+                throw new RuntimeException(e);
 
-			}
+            }
 
-		}
-	}
+        }
+    }
 
-	private static final class TrustEverythingHostNameVerifier
-			implements
-				HostnameVerifier {
+    private static final class TrustEverythingHostNameVerifier
+            implements HostnameVerifier {
 
-		@Override
-		public boolean verify(String s, SSLSession sslSession) {
-			return true;
-		}
+        @Override
+        public boolean verify(String s, SSLSession sslSession) {
+            return true;
+        }
 
-	}
+    }
 
-	private static final class TrustEverythingTrustManager
-			implements
-				X509TrustManager {
+    private static final class TrustEverythingTrustManager
+            implements X509TrustManager {
 
-		@Override
-		public void checkClientTrusted(X509Certificate[] x509Certificates,
-				String s) throws CertificateException {
-		}
+        @Override
+        public void checkClientTrusted(X509Certificate[] x509Certificates,
+                                       String s) throws CertificateException {
+        }
 
-		@Override
-		public void checkServerTrusted(X509Certificate[] x509Certificates,
-				String s) throws CertificateException {
-		}
+        @Override
+        public void checkServerTrusted(X509Certificate[] x509Certificates,
+                                       String s) throws CertificateException {
+        }
 
-		@Override
-		public X509Certificate[] getAcceptedIssuers() {
-			return new X509Certificate[0];
-		}
+        @Override
+        public X509Certificate[] getAcceptedIssuers() {
+            return new X509Certificate[0];
+        }
 
-	}
+    }
 
 }
