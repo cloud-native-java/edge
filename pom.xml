@@ -11,8 +11,10 @@
         <relativePath/>
     </parent>
     <modules>
+        <module>auth-service</module>
+        <module>downstream-insecure-greetings-service</module>
+        <module>downstream-secure-greetings-service</module>
         <module>circuit-breakers</module>
-        <module>security</module>
     </modules>
 
 
