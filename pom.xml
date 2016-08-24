@@ -14,10 +14,9 @@
         <module>auth-service</module>
         <module>downstream-insecure-greetings-service</module>
         <module>downstream-secure-greetings-service</module>
-        <module>circuit-breakers</module>
+        <module>edge-eureka-service</module>
+        <module>zuul-microproxy</module>
     </modules>
-
-
     <build>
         <plugins>
             <plugin>

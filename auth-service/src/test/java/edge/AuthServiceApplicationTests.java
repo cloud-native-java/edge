@@ -1,5 +1,6 @@
 package edge;
 
+import auth.AuthServiceApplication;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Before;
@@ -28,7 +29,7 @@ public class AuthServiceApplicationTests {
     private static AtomicInteger PORT = new AtomicInteger();
 
     @Configuration
-    @Import(AuthorizationServerApplication.class)
+    @Import(AuthServiceApplication.class)
     public static class AuthConfig {
 
         @EventListener(EmbeddedServletContainerInitializedEvent.class)
@@ -51,7 +52,6 @@ public class AuthServiceApplicationTests {
 
     @Test
     public void generateToken() throws Exception {
-
         URI uri = URI.create("http://localhost:" + this.port + "/uaa/oauth/token");
         String username = "jlong";
         String password = "spring";
@@ -67,8 +67,9 @@ public class AuthServiceApplicationTests {
                 add("password", password);
             }
         };
-        String token = Base64Utils.encodeToString(
-                (client + ":" + clientSecret).getBytes(Charset.forName("UTF-8")));
+
+        String token = Base64Utils.encodeToString((client + ":" + clientSecret).getBytes(Charset.forName("UTF-8")));
+
         RequestEntity<LinkedMultiValueMap<String, String>> requestEntity =
                 RequestEntity
                         .post(uri)
