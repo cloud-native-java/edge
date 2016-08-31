@@ -12,10 +12,10 @@
     </parent>
     <modules>
         <module>auth-service</module>
-        <module>downstream-insecure-greetings-service</module>
-        <module>downstream-secure-greetings-service</module>
         <module>edge-eureka-service</module>
         <module>zuul-microproxy</module>
+        <module>secure-edge-service</module>
+        <module>secure-greetings-service</module>
     </modules>
     <build>
         <plugins>
