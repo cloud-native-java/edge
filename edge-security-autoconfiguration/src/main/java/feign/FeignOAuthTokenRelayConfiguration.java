@@ -15,6 +15,12 @@ import org.springframework.util.StringUtils;
 import javax.servlet.ServletRequestEvent;
 import javax.servlet.ServletRequestListener;
 
+
+
+
+// todo: https://jfconavarrete.wordpress.com/2014/09/15/make-spring-security-context-available-inside-a-hystrix-command/
+
+
 /**
  * this works with Feign only so long as {@code hystrix.command.default.execution.isolation.strategy=SEMAPHORE}
  * is specified somewhere. Feign delegates to Hystrix for isolation against possibly errant calls.
