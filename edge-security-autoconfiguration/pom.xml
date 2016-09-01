@@ -10,41 +10,25 @@
         <artifactId>edge</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-
-    <artifactId>secure-greetings-service</artifactId>
-    <name>edge/secure-greetings-service</name>
-
+    <artifactId>edge-security-autoconfiguration</artifactId>
+    <name>edge/edge-security-autoconfiguration</name>
     <dependencies>
-        <dependency>
-            <groupId>cnj</groupId>
-            <artifactId>edge-security-autoconfiguration</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-oauth2</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.cloud</groupId>
-            <artifactId>spring-cloud-starter-eureka</artifactId>
+            <artifactId>spring-cloud-starter-feign</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

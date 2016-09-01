@@ -14,6 +14,7 @@
         <module>auth-service</module>
         <module>edge-eureka-service</module>
         <module>zuul-microproxy</module>
+        <module>edge-security-autoconfiguration</module>
         <module>secure-edge-service</module>
         <module>secure-greetings-service</module>
     </modules>
