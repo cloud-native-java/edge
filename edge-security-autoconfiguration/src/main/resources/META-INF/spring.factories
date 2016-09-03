@@ -1,4 +1,1 @@
-
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  feign.FeignOAuthTokenRelayConfiguration,\
-  resource.DiscoveryAwareResourceServerAutoConfiguration
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=feign.FeignOAuthTokenRelayConfiguration
