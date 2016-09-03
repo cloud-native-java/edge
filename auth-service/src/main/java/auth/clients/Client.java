@@ -13,7 +13,14 @@ public class Client {
 
     private String clientId, secret;
 
-    private String scopes = "openid", authorizedGrantTypes = "password,client_credentials,refresh_token";
+    private String scopes = "openid";
+
+    // https://tools.ietf.org/html/rfc6749
+    private String authorizedGrantTypes =
+            "implicit," +  // redirects back to JS clients with a token, not just an authorization code
+            "password," + // no need for redirect: username & pw go in, token comes out (eg, mobile)
+            "client_credentials," +   // authenticate the client only (no need to worry about user)
+            "refresh_token"; // don't provide an acess token. provide a refresh token which may be subsequently redeemed for an access token.
 
     private String authorities = "ROLE_USER,ROLE_ADMIN";
 
