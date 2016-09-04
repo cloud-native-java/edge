@@ -12,11 +12,13 @@
     </parent>
     <modules>
         <module>auth-service</module>
+        <module>social-auth-service</module>
         <module>edge-eureka-service</module>
         <module>zuul-microproxy</module>
         <module>edge-security-autoconfiguration</module>
         <module>secure-edge-service</module>
         <module>secure-greetings-service</module>
+        <module>sso-client</module>
     </modules>
     <build>
         <plugins>

@@ -1,0 +1,21 @@
+
+
+
+security:
+  oauth2:
+    client:
+      client-id: acme
+      client-secret: acmesecret
+      accessTokenUri: http://localhost:9191/uaa/oauth/access_token
+      userAuthorizationUri: http://localhost:9191/uaa/oauth/authorize
+      #loadBalanced: true
+    resource:
+      user-info-uri: http://localhost:9191/uaa/user
+      loadBalanced: true
+
+
+zuul:
+  routes:
+    user:
+      path: /user/**
+      url: http://localhost:9191/uaa/user

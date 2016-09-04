@@ -21,7 +21,7 @@ public class FeignOAuthTokenRelayConfiguration {
 
     // this works because we added @EnableOAuth2Client to the the services
     @Bean
-    public RequestInterceptor requestInterceptor(OAuth2ClientContext clientContext) {
+    RequestInterceptor requestInterceptor(OAuth2ClientContext clientContext) {
         return requestTemplate ->
                 requestTemplate.header(HttpHeaders.AUTHORIZATION,
                         clientContext.getAccessToken().getTokenType() + ' ' +
