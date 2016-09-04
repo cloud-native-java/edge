@@ -18,7 +18,7 @@ public class ClientConfiguration {
                     BaseClientDetails details = new BaseClientDetails(client.getClientId(), null, client.getScopes(),
                             client.getAuthorizedGrantTypes(), client.getAuthorities());
                     details.setClientSecret(client.getSecret());
-//                    details.setAutoApproveScopes(Collections.singletonList("*"));
+                    details.setAutoApproveScopes(Collections.singletonList(".*"));
                     details.setRegisteredRedirectUri(Collections.singleton("http://localhost:8080"));
                     return details;
                 })

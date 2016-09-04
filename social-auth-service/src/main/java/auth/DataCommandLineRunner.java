@@ -11,7 +11,6 @@ import java.util.stream.Stream;
 @Component
 public class DataCommandLineRunner implements CommandLineRunner {
 
-
     private final ClientRepository clientRepository;
 
     @Autowired
@@ -22,7 +21,7 @@ public class DataCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         Stream.of("acme,acmesecret", "html5,secret", "android,secret", "ios,secret")
-                .map(x -> x.split(","))
-                .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
+            .map(x -> x.split(","))
+            .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
     }
 }
