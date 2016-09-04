@@ -12,6 +12,7 @@ security:
     resource:
       user-info-uri: http://localhost:9191/uaa/user
       loadBalanced: true
+  enable-csrf: false
 
 
 zuul:
