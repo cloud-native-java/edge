@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 // TODO http://blog.jdriven.com/2016/09/securing-application-landscape-spring-cloud-security-part-1/
 
-@EnableDiscoveryClient
+//@EnableDiscoveryClient
 @EnableResourceServer
 @SpringBootApplication
 public class AuthServiceApplication {

@@ -6,8 +6,6 @@ security:
       scope: read,write
       auto-approve-scopes: '.*'
 
-
-
 facebook:
   client:
     clientId: 233668646673605
@@ -32,5 +30,3 @@ github:
 logging:
   level:
     org.springframework.security: DEBUG
-server:
-  port: 9191
