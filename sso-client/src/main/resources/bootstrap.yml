@@ -1,0 +1,44 @@
+#security:
+#  oauth2:
+#    client:
+#      clientId: 233668646673605
+#      clientSecret: 33b17e044ee6a4fa383f46ec6e28ea1d
+#      accessTokenUri: https://graph.facebook.com/oauth/access_token
+#      userAuthorizationUri: https://www.facebook.com/dialog/oauth
+#      tokenName: oauth_token
+#      authenticationScheme: query
+#      clientAuthenticationScheme: form
+#    resource:
+#      userInfoUri: https://graph.facebook.com/me
+
+logging:
+  level:
+    org.springframework.security: DEBUG
+
+
+
+security:
+  oauth2:
+    client:
+      client-id: acme
+      client-secret: acmesecret
+      accessTokenUri: http://localhost:9191/uaa/oauth/token
+      userAuthorizationUri: http://localhost:9191/uaa/oauth/authorize
+      #loadBalanced: true
+    resource:
+      user-info-uri: http://localhost:9191/uaa/user
+      #loadBalanced: true
+  #enable-csrf: false
+
+#zuul:
+#  routes:
+#    user:
+#      path: /user/**
+#      url: http://localhost:9191/uaa/user
+
+spring:
+  application:
+    name: sso-client
+
+server:
+  port: 8080
