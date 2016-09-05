@@ -12,6 +12,7 @@
     </parent>
     <modules>
         <module>auth-service</module>
+        <module>simple-auth-service</module>
         <module>social-auth-service</module>
         <module>edge-eureka-service</module>
         <module>zuul-microproxy</module>
