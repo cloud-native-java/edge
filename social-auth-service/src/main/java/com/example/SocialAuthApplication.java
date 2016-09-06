@@ -57,7 +57,7 @@ public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http.antMatcher("/**").authorizeRequests()
-                .antMatchers("/", "/uaa", "/login**", "/webjars/**", "/webjars/**").permitAll().anyRequest()
+                .antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
                 .logoutSuccessUrl("/").permitAll().and().csrf()
@@ -73,6 +73,7 @@ public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
         public void configure(HttpSecurity http) throws Exception {
             // @formatter:off
             http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
+            http.antMatcher("/user").authorizeRequests().anyRequest().authenticated();
             // @formatter:on
         }
     }
@@ -111,8 +112,10 @@ public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
     }
 
     private Filter ssoFilter(ClientResources client, String path) {
-        OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-                path);
+
+        OAuth2ClientAuthenticationProcessingFilter filter =
+                new OAuth2ClientAuthenticationProcessingFilter(path);
+
         OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
         filter.setRestTemplate(template);
         filter.setTokenServices(new UserInfoTokenServices(
