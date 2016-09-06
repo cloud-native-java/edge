@@ -6,6 +6,8 @@ security:
       scope: read,write
       auto-approve-scopes: '.*'
 
+#server.port=${PORT:9191}
+
 
 facebook:
   client:
@@ -18,24 +20,23 @@ facebook:
     clientAuthenticationScheme: form
   resource:
     userInfoUri: https://graph.facebook.com/me
+
+
+
 github:
   client:
-    clientId: bd1c0a783ccdd1c9b9e4
-    clientSecret: 1a9030fbca47a5b2c28e92f19050bb77824b5ad1
+    client-id: 83aea5adb9b172f14260
+    client-secret: 4f03278cbe8b2f3df3b6fbbff0382f7740a6b3ce
     accessTokenUri: https://github.com/login/oauth/access_token
     userAuthorizationUri: https://github.com/login/oauth/authorize
     clientAuthenticationScheme: form
   resource:
     userInfoUri: https://api.github.com/user
 
+
 logging:
   level:
     org.springframework.security: DEBUG
 
-
 server:
-  context-path: /uaa
-  port: 9191
-endpoints:
-  mappings:
-    enabled: true
+  port: ${PORT:9191}

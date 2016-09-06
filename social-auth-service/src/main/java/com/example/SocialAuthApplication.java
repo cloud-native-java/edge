@@ -25,7 +25,6 @@ import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientAuthenticationProcessingFilter;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
-import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.client.token.grant.code.AuthorizationCodeResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableAuthorizationServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
@@ -43,7 +42,7 @@ import org.springframework.web.filter.CompositeFilter;
 @EnableOAuth2Client
 @EnableAuthorizationServer
 @Order(6)
-public class SocialApplication extends WebSecurityConfigurerAdapter {
+public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
 
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
@@ -58,7 +57,8 @@ public class SocialApplication extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
-        http.antMatcher("/**").authorizeRequests().antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
+        http.antMatcher("/**").authorizeRequests()
+                .antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
                 .logoutSuccessUrl("/").permitAll().and().csrf()
@@ -79,7 +79,7 @@ public class SocialApplication extends WebSecurityConfigurerAdapter {
     }
 
     public static void main(String[] args) {
-        SpringApplication.run(SocialApplication.class, args);
+        SpringApplication.run(SocialAuthApplication.class, args);
     }
 
     @Bean
@@ -120,7 +120,6 @@ public class SocialApplication extends WebSecurityConfigurerAdapter {
                 client.getResource().getUserInfoUri(), client.getClient().getClientId()));
         return filter;
     }
-
 }
 
 class ClientResources {

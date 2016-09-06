@@ -6,6 +6,7 @@ import org.springframework.security.oauth2.provider.ClientDetailsService;
 import org.springframework.security.oauth2.provider.ClientRegistrationException;
 import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 @Configuration
@@ -15,10 +16,10 @@ public class ClientConfiguration {
     ClientDetailsService clientDetailsService(ClientRepository clientRepository) {
         return clientId -> clientRepository.findByClientId(clientId)
                 .map(client -> {
-                    BaseClientDetails details = new BaseClientDetails(client.getClientId(), null, client.getScopes(),
-                            client.getAuthorizedGrantTypes(), client.getAuthorities());
+                    BaseClientDetails details = new BaseClientDetails(client.getClientId(), null,
+                            client.getScopes(), client.getAuthorizedGrantTypes(), client.getAuthorities());
                     details.setClientSecret(client.getSecret());
-                    details.setAutoApproveScopes(Collections.singletonList(".*"));
+                    details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
                     details.setRegisteredRedirectUri(Collections.singleton("http://localhost:8080"));
                     return details;
                 })

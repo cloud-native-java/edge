@@ -1,3 +1,5 @@
+
+
 #security:
 #  oauth2:
 #    client:
@@ -15,8 +17,6 @@ logging:
   level:
     org.springframework.security: DEBUG
 
-
-
 security:
   oauth2:
     client:
@@ -24,11 +24,12 @@ security:
       client-secret: acmesecret
       accessTokenUri: http://localhost:9191/uaa/oauth/token
       userAuthorizationUri: http://localhost:9191/uaa/oauth/authorize
-      #loadBalanced: true
     resource:
-      user-info-uri: http://localhost:9191/uaa/user
       #loadBalanced: true
-  #enable-csrf: false
+      user-info-uri: http://localhost:9191/uaa/user
+
+
+
 
 #zuul:
 #  routes:
