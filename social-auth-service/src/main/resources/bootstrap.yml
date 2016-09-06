@@ -21,8 +21,6 @@ facebook:
   resource:
     userInfoUri: https://graph.facebook.com/me
 
-
-
 github:
   client:
     client-id: 83aea5adb9b172f14260
