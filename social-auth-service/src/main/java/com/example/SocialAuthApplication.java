@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoT
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -31,11 +32,12 @@ import org.springframework.web.filter.CompositeFilter;
 
 import javax.servlet.Filter;
 import java.security.Principal;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@EnableDiscoveryClient
 @SpringBootApplication
 @RestController
 @EnableOAuth2Client
@@ -43,8 +45,12 @@ import java.util.Map;
 @Order(6)
 public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
 
+    private final OAuth2ClientContext oauth2ClientContext;
+
     @Autowired
-    OAuth2ClientContext oauth2ClientContext;
+    public SocialAuthApplication(OAuth2ClientContext oauth2ClientContext) {
+        this.oauth2ClientContext = oauth2ClientContext;
+    }
 
     @RequestMapping({"/user", "/me"})
     public Map<String, String> user(Principal principal) {
@@ -104,10 +110,12 @@ public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
 
     private Filter ssoFilter() {
         CompositeFilter filter = new CompositeFilter();
-        List<Filter> filters = new ArrayList<>();
-        filters.add(ssoFilter(facebook(), "/login/facebook"));
-        filters.add(ssoFilter(github(), "/login/github"));
+
+        List<Filter> filters = Arrays.asList(
+                ssoFilter(facebook(), "/login/facebook"),
+                ssoFilter(github(), "/login/github"));
         filter.setFilters(filters);
+
         return filter;
     }
 
@@ -140,4 +148,3 @@ class ClientResources {
         return resource;
     }
 }
-
