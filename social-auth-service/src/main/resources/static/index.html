@@ -7,20 +7,18 @@
     <meta name="description" content="" />
     <meta name="viewport" content="width=device-width" />
     <base href="/" />
-    <link rel="stylesheet" type="text/css"
-          href="/webjars/bootstrap/css/bootstrap.min.css" />
-    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-    <script type="text/javascript"
-            src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="/uaa/webjars/bootstrap/css/bootstrap.min.css" />
+    <script type="text/javascript" src="/uaa/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/uaa/webjars/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body ng-app="app" ng-controller="home as home">
 <h1>Login</h1>
 <div class="container" ng-show="!home.authenticated">
     <div>
-        With Facebook: <a href="/login/facebook">click here</a>
+        With Facebook: <a href="/uaa/login/facebook">click here</a>
     </div>
     <div>
-        With Github: <a href="/login/github">click here</a>
+        With Github: <a href="/uaa/login/github">click here</a>
     </div>
 </div>
 <div class="container" ng-show="home.authenticated">
@@ -29,7 +27,7 @@
         <button ng-click="home.logout()" class="btn btn-primary">Logout</button>
     </div>
 </div>
-<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+<script type="text/javascript" src="/uaa/webjars/angularjs/angular.min.js"></script>
 <script type="text/javascript">
     angular
             .module("app", [])

@@ -1,13 +1,5 @@
 package com.example;
 
-import java.security.Principal;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.Filter;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -37,6 +29,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.filter.CompositeFilter;
 
+import javax.servlet.Filter;
+import java.security.Principal;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 @SpringBootApplication
 @RestController
 @EnableOAuth2Client
@@ -47,7 +46,7 @@ public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
     @Autowired
     OAuth2ClientContext oauth2ClientContext;
 
-    @RequestMapping({ "/user", "/me" })
+    @RequestMapping({"/user", "/me"})
     public Map<String, String> user(Principal principal) {
         Map<String, String> map = new LinkedHashMap<>();
         map.put("name", principal.getName());
@@ -58,7 +57,7 @@ public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         // @formatter:off
         http.antMatcher("/**").authorizeRequests()
-                .antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
+                .antMatchers("/", "/uaa", "/login**", "/webjars/**", "/webjars/**").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
                 .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
                 .logoutSuccessUrl("/").permitAll().and().csrf()

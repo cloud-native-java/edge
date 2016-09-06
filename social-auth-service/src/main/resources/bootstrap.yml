@@ -38,3 +38,4 @@ logging:
 
 server:
   port: ${PORT:9191}
+  context-path: /uaa
