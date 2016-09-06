@@ -31,17 +31,17 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@EnableDiscoveryClient
+ @EnableDiscoveryClient
 @SpringBootApplication
 @EnableOAuth2Sso
 @RestController
 public class SsoApplication extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    @LoadBalanced
-    public OAuth2RestTemplate restTemplate(UserInfoRestTemplateFactory factory) {
-        return factory.getUserInfoRestTemplate();
-    }
+//    @Bean
+//    @LoadBalanced
+//    public OAuth2RestTemplate restTemplate(UserInfoRestTemplateFactory factory) {
+//        return factory.getUserInfoRestTemplate();
+//    }
 
     @RequestMapping("/user")
     public Principal user(Principal principal) {

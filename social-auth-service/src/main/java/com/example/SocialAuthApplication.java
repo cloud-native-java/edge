@@ -38,43 +38,94 @@ import java.util.List;
 import java.util.Map;
 
 @EnableDiscoveryClient
-@SpringBootApplication
-@RestController
 @EnableOAuth2Client
-@EnableAuthorizationServer
-@Order(6)
-public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
+@SpringBootApplication
+public class SocialAuthApplication {
 
-    private final OAuth2ClientContext oauth2ClientContext;
+    @RestController
+    public static class PrincipalRestController {
 
-    @Autowired
-    public SocialAuthApplication(OAuth2ClientContext oauth2ClientContext) {
-        this.oauth2ClientContext = oauth2ClientContext;
+        @RequestMapping({"/user", "/me"})
+        Map<String, String> user(Principal principal) {
+            Map<String, String> map = new LinkedHashMap<>();
+            map.put("name", principal.getName());
+            return map;
+        }
     }
 
-    @RequestMapping({"/user", "/me"})
-    public Map<String, String> user(Principal principal) {
-        Map<String, String> map = new LinkedHashMap<>();
-        map.put("name", principal.getName());
-        return map;
+    @Order(6)
+    @Configuration
+    @EnableAuthorizationServer
+    public static class OAuth2WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
+
+        private final OAuth2ClientContext oauth2ClientContext;
+
+        @Autowired
+        public OAuth2WebSecurityConfiguration(OAuth2ClientContext oauth2ClientContext) {
+            super();
+            this.oauth2ClientContext = oauth2ClientContext;
+        }
+
+        @Override
+        protected void configure(HttpSecurity http) throws Exception {
+            // @formatter:off
+            http.antMatcher("/**").authorizeRequests()
+                    .antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
+                    .authenticated().and().exceptionHandling()
+                    .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
+                    .logoutSuccessUrl("/").permitAll().and().csrf()
+                    .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+                    .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
+            // @formatter:on
+        }
+
+        @Bean
+        FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
+            FilterRegistrationBean registration = new FilterRegistrationBean();
+            registration.setFilter(filter);
+            registration.setOrder(-100);
+            return registration;
+        }
+
+        @Bean
+        @ConfigurationProperties("github")
+        ClientResources github() {
+            return new ClientResources();
+        }
+
+        @Bean
+        @ConfigurationProperties("facebook")
+        ClientResources facebook() {
+            return new ClientResources();
+        }
+
+        private Filter ssoFilter() {
+            CompositeFilter filter = new CompositeFilter();
+            List<Filter> filters = Arrays.asList(
+                    ssoFilter(facebook(), "/login/facebook"),
+                    ssoFilter(github(), "/login/github"));
+            filter.setFilters(filters);
+            return filter;
+        }
+
+        private Filter ssoFilter(ClientResources client, String path) {
+
+            OAuth2ClientAuthenticationProcessingFilter filter =
+                    new OAuth2ClientAuthenticationProcessingFilter(path);
+
+            OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
+            filter.setRestTemplate(template);
+            filter.setTokenServices(new UserInfoTokenServices(
+                    client.getResource().getUserInfoUri(), client.getClient().getClientId()));
+            return filter;
+        }
     }
 
-    @Override
-    protected void configure(HttpSecurity http) throws Exception {
-        // @formatter:off
-        http.antMatcher("/**").authorizeRequests()
-                .antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
-                .authenticated().and().exceptionHandling()
-                .authenticationEntryPoint(new LoginUrlAuthenticationEntryPoint("/")).and().logout()
-                .logoutSuccessUrl("/").permitAll().and().csrf()
-                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
-                .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
-        // @formatter:on
-    }
 
     @Configuration
     @EnableResourceServer
     protected static class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
+
         @Override
         public void configure(HttpSecurity http) throws Exception {
             // @formatter:off
@@ -86,49 +137,6 @@ public class SocialAuthApplication extends WebSecurityConfigurerAdapter {
 
     public static void main(String[] args) {
         SpringApplication.run(SocialAuthApplication.class, args);
-    }
-
-    @Bean
-    public FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-        FilterRegistrationBean registration = new FilterRegistrationBean();
-        registration.setFilter(filter);
-        registration.setOrder(-100);
-        return registration;
-    }
-
-    @Bean
-    @ConfigurationProperties("github")
-    public ClientResources github() {
-        return new ClientResources();
-    }
-
-    @Bean
-    @ConfigurationProperties("facebook")
-    public ClientResources facebook() {
-        return new ClientResources();
-    }
-
-    private Filter ssoFilter() {
-        CompositeFilter filter = new CompositeFilter();
-
-        List<Filter> filters = Arrays.asList(
-                ssoFilter(facebook(), "/login/facebook"),
-                ssoFilter(github(), "/login/github"));
-        filter.setFilters(filters);
-
-        return filter;
-    }
-
-    private Filter ssoFilter(ClientResources client, String path) {
-
-        OAuth2ClientAuthenticationProcessingFilter filter =
-                new OAuth2ClientAuthenticationProcessingFilter(path);
-
-        OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(), oauth2ClientContext);
-        filter.setRestTemplate(template);
-        filter.setTokenServices(new UserInfoTokenServices(
-                client.getResource().getUserInfoUri(), client.getClient().getClientId()));
-        return filter;
     }
 }
 
@@ -148,3 +156,4 @@ class ClientResources {
         return resource;
     }
 }
+
