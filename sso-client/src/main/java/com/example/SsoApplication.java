@@ -20,8 +20,12 @@ import java.security.Principal;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateFactory;
+import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -30,6 +34,12 @@ import org.springframework.web.bind.annotation.RestController;
 @EnableOAuth2Sso
 @RestController
 public class SsoApplication extends WebSecurityConfigurerAdapter {
+
+    @Bean
+    @LoadBalanced
+    public OAuth2RestTemplate restTemplate(UserInfoRestTemplateFactory factory) {
+        return factory.getUserInfoRestTemplate();
+    }
 
     @RequestMapping("/user")
     public Principal user(Principal principal) {
