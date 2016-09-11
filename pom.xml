@@ -18,6 +18,7 @@
         <module>edge-security-autoconfiguration</module>
         <module>secure-edge-service</module>
         <module>secure-greetings-service</module>
+        <module>greetings-service</module>
         <module>sso-client</module>
     </modules>
     <build>
