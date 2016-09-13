@@ -30,7 +30,7 @@ class GreetingsRestController {
     // <2>
     @RequestMapping
     Map<String, String> hi(@PathVariable String name) {
-        log.info( "this is not a proxied request.");
+        log.info("this is not a proxied request.");
         return this.doHi(name);
     }
 
@@ -43,7 +43,8 @@ class GreetingsRestController {
                            @RequestHeader("x-forwarded-prefix") String prefix) {
 
         log.info(String.format("processing a proxied request from %s://%s:%s " +
-                "with prefix %s for service %s", proto, host, port , prefix, forwardedFor));
+                "with prefix %s for service %s", proto, host, port, prefix, forwardedFor));
+
         return this.doHi(name);
     }
 

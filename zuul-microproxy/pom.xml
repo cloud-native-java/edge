@@ -15,7 +15,15 @@
 			<artifactId>spring-cloud-starter-zuul</artifactId>
 		</dependency>
 
-
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+		</dependency>
+		<!--<dependency>
+			<groupId>com.github</groupId>
+			<artifactId>bucket4j</artifactId>
+			<version>1.0.1</version>
+		</dependency>-->
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-starter-eureka</artifactId>
