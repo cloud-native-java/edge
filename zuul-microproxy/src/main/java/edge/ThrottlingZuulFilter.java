@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 public class ThrottlingZuulFilter extends ZuulFilter {
 
     private final HttpStatus tooManyRequests = HttpStatus.TOO_MANY_REQUESTS;
+
     private final RateLimiter rateLimiter;
 
     @Autowired
@@ -42,22 +43,18 @@ public class ThrottlingZuulFilter extends ZuulFilter {
     @Override
     public Object run() {
         try {
-
             RequestContext currentContext = RequestContext.getCurrentContext();
             HttpServletResponse response = currentContext.getResponse();
-
             if (!rateLimiter.tryAcquire()) {
-
                 response.setContentType(MediaType.TEXT_PLAIN_VALUE);
                 response.setStatus(this.tooManyRequests.value());
                 response.getWriter().append(this.tooManyRequests.getReasonPhrase());
                 currentContext.setSendZuulResponse(false);
-                throw new ZuulException(this.tooManyRequests.getReasonPhrase(), this.tooManyRequests.value(),
-                    this.tooManyRequests.getReasonPhrase());
-
+                throw new ZuulException(this.tooManyRequests.getReasonPhrase(),
+                        this.tooManyRequests.value(),
+                        this.tooManyRequests.getReasonPhrase());
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             ReflectionUtils.rethrowRuntimeException(e);
         }
         return null;

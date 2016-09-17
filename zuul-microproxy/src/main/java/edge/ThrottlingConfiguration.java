@@ -11,7 +11,7 @@ public class ThrottlingConfiguration {
     // they express their SLA through (headers, or something else)
     // every 30 seconds a request will be let through
     @Bean
-    public RateLimiter rateLimiter(String param1) {
+    public RateLimiter rateLimiter() {
         return RateLimiter.create(1.0D / 30.0D);
     }
 }
