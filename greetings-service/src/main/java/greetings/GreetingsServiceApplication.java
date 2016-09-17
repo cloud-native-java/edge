@@ -24,7 +24,6 @@ public class GreetingsServiceApplication {
 @RequestMapping(method = RequestMethod.GET, value = "/{name}")
 class GreetingsRestController {
 
-
     private Log log = LogFactory.getLog(getClass());
 
     // <2>
