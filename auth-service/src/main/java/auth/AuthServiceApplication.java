@@ -39,14 +39,14 @@ public class AuthServiceApplication {
 
 @Configuration
 @EnableAuthorizationServer
-class AuthorizationServer extends AuthorizationServerConfigurerAdapter {
+class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
     private final AuthenticationManager authenticationManager;
 
     private final ClientDetailsService clientDetailsService;
 
     @Autowired
-    public AuthorizationServer(AuthenticationManager authenticationManager,
+    public AuthorizationServerConfiguration(AuthenticationManager authenticationManager,
                                ClientDetailsService clientDetailsService) {
         this.authenticationManager = authenticationManager;
         this.clientDetailsService = clientDetailsService;
@@ -80,12 +80,11 @@ class DataCommandLineRunner implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        Stream.of("dsyer,cloud", "pwebb,boot",
-                "mminella,batch", "rwinch,security", "jlong,spring")
+        Stream.of("dsyer,cloud", "pwebb,boot", "mminella,batch", "rwinch,security", "jlong,spring")
                 .map(s -> s.split(","))
                 .forEach(tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
 
-        Stream.of("acme,acmesecret")
+        Stream.of("html5,secret", "android,secret")
                 .map(x -> x.split(","))
                 .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
     }

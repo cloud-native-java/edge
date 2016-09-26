@@ -1,12 +1,11 @@
-security:
-  oauth2:
-    client:
-      client-id: acme
-      client-secret: acmesecret
-      scope: read,write
-      auto-approve-scopes: '.*'
-
-#server.port=${PORT:9191}
+#security:
+#  oauth2:
+#    client:
+#      client-id: html5
+#      client-secret: secret
+#      scope: read,write
+#      auto-approve-scopes: '.*'
+#
 
 
 facebook:

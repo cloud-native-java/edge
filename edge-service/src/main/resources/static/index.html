@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <title>Demo</title>
+    <meta name="description" content=""/>
+    <meta name="viewport" content="width=device-width"/>
+    <base href="/"/>
+    <!--
+    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css" />
+    -->
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body ng-app="app" ng-controller="home as home">
+
+
+<div class="container" ng-show="!home.authenticated">
+    <a href="/login">Login </a>
+</div>
+
+<div class="container" ng-show="home.authenticated">
+    Logged in as: <b><span ng-bind="home.user"></span></b> <br/>
+    Token: <b><span ng-bind="home.token"></span> </b><br/>
+    Greeting from Zuul Route: <b><span ng-bind="home.greetingFromZuulRoute"></span></b> <br/>
+    Greeting from Edge Service (Feign): <b><span ng-bind="home.greetingFromEdgeService"></span></b> <br/>
+</div>
+<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+<script type="text/javascript">
+
+    var app = angular.module("app", []);
+
+    app.factory('oauth', function () {
+        return {details: null, name: null, token: null};
+    });
+
+
+    app.run(['$http', '$rootScope', 'oauth', function ($http, $rootScope, oauth) {
+
+        $http.get("/user").success(function (data) {
+
+            oauth.details = data.userAuthentication.details;
+            oauth.name = oauth.details.name;
+            oauth.token = data.details.tokenValue;
+
+            $http.defaults.headers.common['Authorization'] = 'bearer ' + oauth.token;
+
+            $rootScope.$broadcast('auth-event', oauth.token);
+        });
+    }]);
+
+    app.controller("home", function ($http, $rootScope, oauth) {
+
+        var self = this;
+
+        self.authenticated = false;
+
+        $rootScope.$on('auth-event', function (evt, ctx) {
+            self.user = oauth.details.name;
+            self.token = oauth.token;
+            self.authenticated = true;
+
+            var name = window.prompt('who would you like to greet?');
+
+
+            // Zuul routes
+            $http.get('/greetings-service/greet/' + name)
+                    .success(function (greetingData) {
+                        self.greetingFromZuulRoute = greetingData.greeting;
+                    })
+                    .error(function (e) {
+                        console.log('oops!' + JSON.stringify(e));
+                    });
+
+            // route through API gateway
+            $http.get('/api/feign/' + name)
+                    .success(function (greetingData) {
+                        self.greetingFromEdgeService = greetingData.greeting;
+                    })
+                    .error(function (e) {
+                        console.log('oops!' + JSON.stringify(e));
+                    });
+        });
+    });
+
+</script>
+</body>
+</html>

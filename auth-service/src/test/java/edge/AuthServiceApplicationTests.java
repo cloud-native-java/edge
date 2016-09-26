@@ -76,10 +76,14 @@ public class AuthServiceApplicationTests {
                         .accept(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Basic " + token)
                         .body(map);
-        ResponseEntity<Map<String, String>> responseEntity = this.restTemplate.exchange(
-                requestEntity, new ParameterizedTypeReference<Map<String, String>>() {
-                });
+
+        ParameterizedTypeReference<Map<String, String>> type =
+                new ParameterizedTypeReference<Map<String, String>>() {};
+
+        ResponseEntity<Map<String, String>> responseEntity = this.restTemplate.exchange(requestEntity, type);
+
         Map<String, String> body = responseEntity.getBody();
+
         log.info("access_token: " + body.get("access_token"));
     }
 
