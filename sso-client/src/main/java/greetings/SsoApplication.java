@@ -15,8 +15,6 @@
  */
 package greetings;
 
-import java.security.Principal;
-
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.security.oauth2.client.EnableOAuth2Sso;
@@ -27,7 +25,9 @@ import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
- @EnableDiscoveryClient
+import java.security.Principal;
+
+@EnableDiscoveryClient
 @SpringBootApplication
 @EnableOAuth2Sso
 @RestController
