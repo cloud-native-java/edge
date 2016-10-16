@@ -13,9 +13,6 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-/**
- * Created by jlong on 10/10/16.
- */
 @Profile("default")
 @RestController
 @RequestMapping("/api")
@@ -36,6 +33,7 @@ class RestTemplateGreetingsClientApiGateway {
                 };
 
         return this.restTemplate.exchange(
-                "http://greetings-service/greet/{name}", HttpMethod.GET, null, type, name).getBody();
+                "http://greetings-service/greet/{name}",
+                HttpMethod.GET, null, type, name).getBody();
     }
 }

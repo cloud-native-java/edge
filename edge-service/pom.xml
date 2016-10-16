@@ -37,6 +37,20 @@
             <artifactId>webjars-locator</artifactId>
         </dependency>
         <!-- webjars -->
+
+
+        <!-- reactor-->
+
+        <!-- https://mvnrepository.com/artifact/io.projectreactor.ipc/reactor-netty -->
+        <dependency>
+            <groupId>io.projectreactor.ipc</groupId>
+            <artifactId>reactor-netty</artifactId>
+        </dependency>
+
+
+
+        <!-- normal -->
+
         <dependency>
             <groupId>cnj</groupId>
             <artifactId>edge-security-autoconfiguration</artifactId>
