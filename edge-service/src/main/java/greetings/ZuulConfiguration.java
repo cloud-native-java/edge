@@ -1,5 +1,6 @@
 package greetings;
 
+import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
@@ -13,7 +14,10 @@ class ZuulConfiguration {
 
     @Bean
     CommandLineRunner commandLineRunner(RouteLocator routeLocator) {
-        return args -> routeLocator.getRoutes().forEach(r -> LogFactory.getLog(getClass()).info(r.toString()));
+        Log log = LogFactory.getLog(getClass());
+        return args -> routeLocator.getRoutes()
+                .forEach(r -> log.info(String.format("%s (%s) %s",
+                        r.getId(), r.getLocation(), r.getFullPath())));
     }
 
 }
