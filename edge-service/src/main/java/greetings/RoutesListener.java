@@ -13,25 +13,32 @@ import org.springframework.stereotype.Component;
 @Component
 class RoutesListener {
 
-    private Log logger = LogFactory.getLog(getClass());
     private final RouteLocator routeLocator;
     private final DiscoveryClient discoveryClient;
 
-    @EventListener(RoutesRefreshedEvent.class)
-    public void onRoutesRefreshedEvent(RoutesRefreshedEvent event) {
-        this.logger.info("onRoutesRefreshedEvent()");
-        this.routeLocator.getRoutes().forEach(this.logger::info);
-    }
+    private Log logger = LogFactory.getLog(getClass());
 
+    // <1>
     @EventListener(HeartbeatEvent.class)
     public void onHeartbeatEvent(HeartbeatEvent event) {
         this.logger.info("onHeartbeatEvent()");
-        this.discoveryClient.getServices().forEach( this.logger::info );
+        this.discoveryClient.getServices()
+                .stream().map(x -> " " + x)
+                .forEach(this.logger::info);
+    }
+
+    // <2>
+    @EventListener(RoutesRefreshedEvent.class)
+    public void onRoutesRefreshedEvent(RoutesRefreshedEvent event) {
+        this.logger.info("onRoutesRefreshedEvent()");
+        this.routeLocator.getRoutes()
+                .stream().map(x -> " " + x)
+                .forEach(this.logger::info);
     }
 
     @Autowired
-    public RoutesListener(DiscoveryClient dc, RouteLocator routeLocator) {
-        this.routeLocator = routeLocator;
+    public RoutesListener(DiscoveryClient dc, RouteLocator rl) {
+        this.routeLocator = rl;
         this.discoveryClient = dc;
     }
 }
