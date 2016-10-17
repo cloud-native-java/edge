@@ -8,36 +8,32 @@
     <meta name="viewport" content="width=device-width"/>
     <base href="/"/>
 
-    <!--
-    <link rel="stylesheet" type="text/css" href="/webjars/bootstrap/css/bootstrap.min.css" />
-    -->
-    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-    <script type="text/javascript"
-            src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+
 </head>
 <body ng-app="app" ng-controller="home as home">
 
 
-<div class="container" ng-show="home.authenticated">
-    Logged in as: <b><span ng-bind="home.user"></span></b> <br/>
-</div>
 <script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
 <script type="text/javascript">
+    angular.module("app", [])
+            .run(['$http', function ($http) {
 
-    var app = angular.module("app", []);
+                // <1>
+                $http.get(location.protocol + "//" + window.location.host + "/greetings-client-uri")
+                        .success(function (data) {
+                            $http.get(data ['uri'] + "/greetings-service/greet/World") // <2>
+                                    .success(function (data) {
+                                        window.alert(data ['greeting']);
+                                    })
+                                    .error(function (e) {
+                                        console.log('oops! ' + JSON.stringify(e));
+                                    });
 
-    app.run(['$http', function ($http) {
-
-        $http.defaults.headers.common['X-Client-Id'] =  'html5-client';
-
-        $http.get("http://172.65.13.57:8082/greetings-service/greet/Josh")
-                .success(function (data) {
-                    window.alert(JSON.stringify(data));
-                })
-                .error(function (e) {
-                    window.alert('oops! ' + JSON.stringify(e))
-                });
-    }]);
+                        })
+                        .error(function (e) {
+                            window.alert('oops! ' + JSON.stringify(e));
+                        });
+            }]);
 </script>
 </body>
 </html>
