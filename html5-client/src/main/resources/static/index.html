@@ -7,33 +7,26 @@
     <meta name="description" content=""/>
     <meta name="viewport" content="width=device-width"/>
     <base href="/"/>
-
-
 </head>
-<body ng-app="app" ng-controller="home as home">
+<body>
 
+<div id="message"></div>
 
-<script type="text/javascript" src="/webjars/angularjs/angular.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript">
-    angular.module("app", [])
-            .run(['$http', function ($http) {
 
-                // <1>
-                $http.get(location.protocol + "//" + window.location.host + "/greetings-client-uri")
-                        .success(function (data) {
-                            $http.get(data ['uri'] + "/greetings-service/greet/World") // <2>
-                                    .success(function (data) {
-                                        window.alert(data ['greeting']);
-                                    })
-                                    .error(function (e) {
-                                        console.log('oops! ' + JSON.stringify(e));
-                                    });
+    // <1>
+    var greetingsClientUrl = location.protocol + "//" + window.location.host
+            + "/greetings-client-uri";
+    $.ajax({url: greetingsClientUrl}).done(function (data) {
+        var nameToGreet = window.prompt("who would you like to greet?");
+        var greetingsServiceUrl = data['uri'] + "/greetings-service/greet/" + nameToGreet;
 
-                        })
-                        .error(function (e) {
-                            window.alert('oops! ' + JSON.stringify(e));
-                        });
-            }]);
+        // <2>
+        $.ajax({url: greetingsServiceUrl}).done(function (greeting) {
+            $("#message").html(greeting['greeting']);
+        });
+    });
 </script>
 </body>
 </html>
