@@ -6,10 +6,10 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 
-@Profile("secure")
+@Profile("sso")
 @Configuration
 @EnableResourceServer
-class ResourceConfiguration extends ResourceServerConfigurerAdapter {
+class SsoResourceConfiguration extends ResourceServerConfigurerAdapter {
 
     @Override
     public void configure(HttpSecurity http) throws Exception {

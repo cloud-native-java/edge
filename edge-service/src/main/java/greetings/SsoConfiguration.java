@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
-@Profile("secure")
+@Profile("sso")
 @Configuration
 @EnableOAuth2Sso
 class SsoConfiguration extends WebSecurityConfigurerAdapter {
