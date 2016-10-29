@@ -12,6 +12,7 @@ public class AccountConfiguration {
 
     @Bean
     UserDetailsService userDetailsService(AccountRepository accountRepository) {
+        // <1>
         return username -> accountRepository.findByUsername(username)
             .map(account -> {
                 boolean active = account.isActive();
