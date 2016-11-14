@@ -6,7 +6,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.oauth2.config.annotation.configurers.*;
 import org.springframework.security.oauth2.config.annotation.web.configuration.*;
 import org.springframework.security.oauth2.config.annotation.web.configurers.*;
-import org.springframework.security.oauth2.provider.ClientDetailsService;
+import org.springframework.security.oauth2.provider.*;
 
 @Configuration
 @EnableAuthorizationServer
@@ -26,12 +26,14 @@ class AuthorizationServerConfiguration
     @Override
     public void configure(ClientDetailsServiceConfigurer clients)
             throws Exception {
+        // <1>
         clients.withClientDetails(clientDetailsService);
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints)
             throws Exception {
+        // <2>
         endpoints.authenticationManager(authenticationManager);
     }
 }

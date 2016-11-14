@@ -9,6 +9,7 @@ import org.springframework.security.oauth2.provider.client.BaseClientDetails;
 import java.util.Arrays;
 import java.util.Collections;
 
+
 @Configuration
 public class ClientConfiguration {
 

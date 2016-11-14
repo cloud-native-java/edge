@@ -36,13 +36,20 @@ public class Client {
         return autoApproveScopes;
     }
 
-    private static String from(String... arr) {
-        return Arrays.stream(arr).collect(Collectors.joining(","));
-    }
-
     public Client(String clientId, String clientSecret) {
         this.clientId = clientId;
         this.secret = clientSecret;
+    }
+
+    public Client(String clientId, String secret, String[] scopes,
+                  String[] authorizedGrantTypes, String[] authorities,
+                  String[] autoApproveScopes) {
+        this.clientId = clientId;
+        this.secret = secret;
+        this.scopes = from(scopes);
+        this.authorizedGrantTypes = from(authorizedGrantTypes);
+        this.authorities = from(authorities);
+        this.autoApproveScopes = from(autoApproveScopes);
     }
 
     Client() {
@@ -58,6 +65,11 @@ public class Client {
 
     public String getSecret() {
         return secret;
+    }
+
+    // <1>
+    private static String from(String... arr) {
+        return Arrays.stream(arr).collect(Collectors.joining(","));
     }
 }
 

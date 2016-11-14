@@ -50,13 +50,17 @@ public class AuthServiceApplicationTests {
         this.port = PORT.get();
     }
 
+
     @Test
     public void generateToken() throws Exception {
+        // <1>
         URI uri = URI.create("http://localhost:" + this.port + "/uaa/oauth/token");
         String username = "jlong";
         String password = "spring";
-        String clientSecret = "acmesecret";
-        String client = "acme";
+        String clientSecret = "secret";
+        String client = "html5";
+
+        // <2>
         LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>() {
             {
                 add("client_secret", clientSecret);
@@ -68,7 +72,9 @@ public class AuthServiceApplicationTests {
             }
         };
 
-        String token = Base64Utils.encodeToString((client + ":" + clientSecret).getBytes(Charset.forName("UTF-8")));
+        // <3>
+        String token = Base64Utils.encodeToString(
+                (client + ":" + clientSecret).getBytes(Charset.forName("UTF-8")));
 
         RequestEntity<LinkedMultiValueMap<String, String>> requestEntity =
                 RequestEntity
@@ -80,8 +86,10 @@ public class AuthServiceApplicationTests {
         ParameterizedTypeReference<Map<String, String>> type =
                 new ParameterizedTypeReference<Map<String, String>>() {};
 
-        ResponseEntity<Map<String, String>> responseEntity = this.restTemplate.exchange(requestEntity, type);
+        ResponseEntity<Map<String, String>> responseEntity =
+                this.restTemplate.exchange(requestEntity, type);
 
+        // <4>
         Map<String, String> body = responseEntity.getBody();
 
         log.info("access_token: " + body.get("access_token"));

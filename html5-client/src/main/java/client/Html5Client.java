@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Collections;
 import java.util.Map;
 
+@RestController
 @EnableDiscoveryClient
 @SpringBootApplication
-@RestController
 public class Html5Client {
 
     private final DiscoveryClient discoveryClient;

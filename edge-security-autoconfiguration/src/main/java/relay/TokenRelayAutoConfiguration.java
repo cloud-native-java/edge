@@ -16,9 +16,10 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.client.RestTemplate;
 
-// todo: https://jfconavarrete.wordpress.com/2014/09/15/make-spring-security-context-available-inside-a-hystrix-command/
 
-// this works because we added @EnableOAuth2Client to the the services
+// this works because we
+// add @EnableOAuth2Client
+// to the the services
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass(EnableResourceServer.class)
@@ -30,6 +31,7 @@ public class TokenRelayAutoConfiguration {
     @Profile("!" + SECURE_PROFILE)
     public static class RestTemplateConfiguration {
 
+        // <1>
         @Bean
         @LoadBalanced
         RestTemplate restTemplate() {
@@ -41,6 +43,7 @@ public class TokenRelayAutoConfiguration {
     @Profile(SECURE_PROFILE)
     public static class SecureRestTemplateConfiguration {
 
+        // <2>
         @Bean
         @LoadBalanced
         OAuth2RestTemplate restTemplate(UserInfoRestTemplateFactory factory) {
@@ -54,6 +57,7 @@ public class TokenRelayAutoConfiguration {
     @ConditionalOnBean(OAuth2ClientContextFilter.class)
     public static class FeignAutoConfiguration {
 
+        // <3> 
         @Bean
         RequestInterceptor requestInterceptor(OAuth2ClientContext clientContext) {
             return requestTemplate ->
