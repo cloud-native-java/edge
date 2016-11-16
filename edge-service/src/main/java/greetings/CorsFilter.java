@@ -6,6 +6,8 @@ import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.client.discovery.event.HeartbeatEvent;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -21,6 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 @Profile("cors")
 @Component
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 class CorsFilter implements Filter {
 
     private final Map<String, List<ServiceInstance>> catalog = new ConcurrentHashMap<>();

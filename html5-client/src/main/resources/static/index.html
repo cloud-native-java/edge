@@ -20,8 +20,8 @@
             + "/greetings-client-uri";
     $.ajax({url: greetingsClientUrl}).done(function (data) {
         var nameToGreet = window.prompt("who would you like to greet?");
-        var greetingsServiceUrl = data['uri'] + "/greetings-service/greet/" + nameToGreet;
-
+        var greetingsServiceUrl = data['uri'] + "/lets/greet/" + nameToGreet;
+        console.log  ('greetingsServiceUrl: ' + greetingsServiceUrl);
         // <2>
         $.ajax({url: greetingsServiceUrl}).done(function (greeting) {
             $("#message").html(greeting['greeting']);

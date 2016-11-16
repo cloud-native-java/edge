@@ -20,8 +20,9 @@ public class ClientConfiguration {
                     BaseClientDetails details = new BaseClientDetails(client.getClientId(), null,
                             client.getScopes(), client.getAuthorizedGrantTypes(), client.getAuthorities());
                     details.setClientSecret(client.getSecret());
-                    details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
-                    details.setRegisteredRedirectUri(Collections.singleton("http://localhost:8082"));
+                    // <1>
+                    // details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
+                    details.setRegisteredRedirectUri(Collections.singleton("http://10.0.1.14:8082"));
                     return details;
                 })
                 .orElseThrow(() -> new ClientRegistrationException(String.format("no client %s registered", clientId)));
