@@ -1,0 +1,13 @@
+---
+applications:
+- name: html5-client
+  memory: 512M
+  instances: 1
+  random-route: true
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
+  path: target/html5-client.jar
+  services:
+    - service-registry
+  env:
+    DEBUG: "true"
+    SPRING_PROFILES_ACTIVE: cloud
