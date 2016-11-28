@@ -8,6 +8,7 @@ applications:
   path: target/edge-service.jar
   services:
     - service-registry
+    - auth-service
   env:
     DEBUG: "true"
     SPRING_PROFILES_ACTIVE: cloud,secure,sso,feign
