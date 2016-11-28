@@ -54,6 +54,7 @@ public class ClientConfiguration {
                     // <1>
                     // details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
 
+                    // <2>
                     String greetingsClientRedirectUri = this.discoveryClientIps.stream().findAny()
                             .orElseThrow(() -> new ClientRegistrationException("couldn't find and bind a greetings-client IP"));
 

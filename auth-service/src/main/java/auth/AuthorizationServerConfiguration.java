@@ -27,13 +27,13 @@ class AuthorizationServerConfiguration
     public void configure(ClientDetailsServiceConfigurer clients)
             throws Exception {
         // <1>
-        clients.withClientDetails(clientDetailsService);
+        clients.withClientDetails(this.clientDetailsService);
     }
 
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints)
             throws Exception {
         // <2>
-        endpoints.authenticationManager(authenticationManager);
+        endpoints.authenticationManager(this.authenticationManager);
     }
 }

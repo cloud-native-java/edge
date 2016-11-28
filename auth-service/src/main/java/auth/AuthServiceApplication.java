@@ -5,9 +5,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
-
-// TODO http://blog.jdriven.com/2016/09/securing-application-landscape-spring-cloud-security-part-1/
-
 @EnableDiscoveryClient
 @EnableResourceServer
 @SpringBootApplication
@@ -17,5 +14,3 @@ public class AuthServiceApplication {
         SpringApplication.run(AuthServiceApplication.class, args);
     }
 }
-
-

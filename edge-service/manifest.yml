@@ -1,0 +1,13 @@
+---
+applications:
+- name: edge-service
+  memory: 1G
+  instances: 1
+  random-route: true
+  buildpack: https://github.com/cloudfoundry/java-buildpack.git
+  path: target/edge-service.jar
+  services:
+    - service-registry
+  env:
+    DEBUG: "true"
+    SPRING_PROFILES_ACTIVE: cloud,secure,sso,feign
