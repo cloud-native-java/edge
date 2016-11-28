@@ -8,6 +8,7 @@ applications:
   path: target/auth-service.jar
   services:
     - service-registry
+    - auth-service-pgsql
   env:
     DEBUG: "true"
     SPRING_PROFILES_ACTIVE: cloud
