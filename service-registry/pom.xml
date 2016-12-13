@@ -5,7 +5,7 @@
     <packaging>jar</packaging>
     <parent>
         <groupId>cnj</groupId>
-        <artifactId>routing</artifactId>
+        <artifactId>edge</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>service-registry</artifactId>
