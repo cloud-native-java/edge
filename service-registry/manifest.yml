@@ -1,7 +1,7 @@
 ---
 applications:
 - name: service-registry
-  memory: 512M
+  memory: 1G
   instances: 1
   random-route: true
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
