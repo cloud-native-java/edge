@@ -8,9 +8,9 @@ import java.security.Principal;
 @RestController
 class PrincipalRestController {
 
-    @RequestMapping("/user")
-    Principal principal(Principal principal) {
-        return principal;
-    }
+	@RequestMapping("/user")
+	Principal principal(Principal principal) {
+		return principal;
+	}
 
 }

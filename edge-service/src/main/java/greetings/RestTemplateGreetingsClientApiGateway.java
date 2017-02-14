@@ -18,22 +18,20 @@ import java.util.Map;
 @RequestMapping("/api")
 class RestTemplateGreetingsClientApiGateway {
 
-    private final RestTemplate restTemplate;
+	private final RestTemplate restTemplate;
 
-    @Autowired
-    RestTemplateGreetingsClientApiGateway(@LoadBalanced RestTemplate restTemplate) { // <1>
-        this.restTemplate = restTemplate;
-    }
+	@Autowired
+	RestTemplateGreetingsClientApiGateway(@LoadBalanced RestTemplate restTemplate) { // <1>
+		this.restTemplate = restTemplate;
+	}
 
-    @RequestMapping(method = RequestMethod.GET, value = "/resttemplate/{name}")
-    Map<String, String> restTemplate(@PathVariable String name) {
+	@RequestMapping(method = RequestMethod.GET, value = "/resttemplate/{name}")
+	Map<String, String> restTemplate(@PathVariable String name) {
 
-        ParameterizedTypeReference<Map<String, String>> type =
-                new ParameterizedTypeReference<Map<String, String>>() {
-                };
+		ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
+		};
 
-        return this.restTemplate.exchange(
-                "http://greetings-service/greet/{name}",
-                HttpMethod.GET, null, type, name).getBody();
-    }
+		return this.restTemplate.exchange("http://greetings-service/greet/{name}",
+				HttpMethod.GET, null, type, name).getBody();
+	}
 }

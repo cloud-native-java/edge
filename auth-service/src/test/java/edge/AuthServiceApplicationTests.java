@@ -26,73 +26,68 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class AuthServiceApplicationTests {
 
-    private static AtomicInteger PORT = new AtomicInteger();
+	private static AtomicInteger PORT = new AtomicInteger();
+	private final Log log = LogFactory.getLog(getClass());
+	private ApplicationContext applicationContext;
+	private RestTemplate restTemplate;
+	private int port = 0;
 
-    @Configuration
-    @Import(AuthServiceApplication.class)
-    public static class AuthConfig {
+	@Before
+	public void setUp() throws Exception {
+		this.restTemplate = new RestTemplate();
+		this.applicationContext = SpringApplication.run(AuthConfig.class);
+		this.port = PORT.get();
+	}
 
-        @EventListener(EmbeddedServletContainerInitializedEvent.class)
-        public void ready(EmbeddedServletContainerInitializedEvent evt) {
-            PORT.set(evt.getEmbeddedServletContainer().getPort());
-        }
-    }
+	@Test
+	public void generateToken() throws Exception {
+		// <1>
+		URI uri = URI.create("http://localhost:" + this.port + "/uaa/oauth/token");
+		String username = "jlong";
+		String password = "spring";
+		String clientSecret = "secret";
+		String client = "html5";
 
-    private ApplicationContext applicationContext;
-    private final Log log = LogFactory.getLog(getClass());
-    private RestTemplate restTemplate;
-    private int port = 0;
+		// <2>
+		LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>() {
+			{
+				add("client_secret", clientSecret);
+				add("client_id", client);
+				add("scope", "openid");
+				add("grant_type", "password");
+				add("username", username);
+				add("password", password);
+			}
+		};
 
-    @Before
-    public void setUp() throws Exception {
-        this.restTemplate = new RestTemplate();
-        this.applicationContext = SpringApplication.run(AuthConfig.class);
-        this.port = PORT.get();
-    }
+		// <3>
+		String token = Base64Utils.encodeToString((client + ":" + clientSecret)
+				.getBytes(Charset.forName("UTF-8")));
 
+		RequestEntity<LinkedMultiValueMap<String, String>> requestEntity = RequestEntity
+				.post(uri).accept(MediaType.APPLICATION_JSON)
+				.header("Authorization", "Basic " + token).body(map);
 
-    @Test
-    public void generateToken() throws Exception {
-        // <1>
-        URI uri = URI.create("http://localhost:" + this.port + "/uaa/oauth/token");
-        String username = "jlong";
-        String password = "spring";
-        String clientSecret = "secret";
-        String client = "html5";
+		ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
+		};
 
-        // <2>
-        LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>() {
-            {
-                add("client_secret", clientSecret);
-                add("client_id", client);
-                add("scope", "openid");
-                add("grant_type", "password");
-                add("username", username);
-                add("password", password);
-            }
-        };
+		ResponseEntity<Map<String, String>> responseEntity = this.restTemplate.exchange(
+				requestEntity, type);
 
-        // <3>
-        String token = Base64Utils.encodeToString(
-                (client + ":" + clientSecret).getBytes(Charset.forName("UTF-8")));
+		// <4>
+		Map<String, String> body = responseEntity.getBody();
 
-        RequestEntity<LinkedMultiValueMap<String, String>> requestEntity =
-                RequestEntity
-                        .post(uri)
-                        .accept(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Basic " + token)
-                        .body(map);
+		log.info("access_token: " + body.get("access_token"));
+	}
 
-        ParameterizedTypeReference<Map<String, String>> type =
-                new ParameterizedTypeReference<Map<String, String>>() {};
+	@Configuration
+	@Import(AuthServiceApplication.class)
+	public static class AuthConfig {
 
-        ResponseEntity<Map<String, String>> responseEntity =
-                this.restTemplate.exchange(requestEntity, type);
-
-        // <4>
-        Map<String, String> body = responseEntity.getBody();
-
-        log.info("access_token: " + body.get("access_token"));
-    }
+		@EventListener(EmbeddedServletContainerInitializedEvent.class)
+		public void ready(EmbeddedServletContainerInitializedEvent evt) {
+			PORT.set(evt.getEmbeddedServletContainer().getPort());
+		}
+	}
 
 }

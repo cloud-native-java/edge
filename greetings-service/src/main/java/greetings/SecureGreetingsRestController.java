@@ -15,11 +15,9 @@ import java.util.Map;
 @RequestMapping(method = RequestMethod.GET, value = "/greet/{name}")
 public class SecureGreetingsRestController {
 
-    @RequestMapping
-    Map<String, String> hi(@PathVariable String name, Principal p) {
-        return Collections.singletonMap("greeting", "Hello, " + name + " from " + p.getName() +
-                "!");
-    }
+	@RequestMapping
+	Map<String, String> hi(@PathVariable String name, Principal p) {
+		return Collections.singletonMap("greeting", "Hello, " + name + " from " + p.getName()
+				+ "!");
+	}
 }
-
-

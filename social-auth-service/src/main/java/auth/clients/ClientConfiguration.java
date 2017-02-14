@@ -12,17 +12,24 @@ import java.util.Collections;
 @Configuration
 public class ClientConfiguration {
 
-    @Bean
-    ClientDetailsService clientDetailsService(ClientRepository clientRepository) {
-        return clientId -> clientRepository.findByClientId(clientId)
-                .map(client -> {
-                    BaseClientDetails details = new BaseClientDetails(client.getClientId(), null,
-                            client.getScopes(), client.getAuthorizedGrantTypes(), client.getAuthorities());
-                    details.setClientSecret(client.getSecret());
-                    details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
-                    details.setRegisteredRedirectUri(Collections.singleton("http://localhost:8082"));
-                    return details;
-                })
-                .orElseThrow(() -> new ClientRegistrationException(String.format("no client %s registered", clientId)));
-    }
+	@Bean
+	ClientDetailsService clientDetailsService(ClientRepository clientRepository) {
+		return clientId -> clientRepository
+				.findByClientId(clientId)
+				.map(
+						client -> {
+							BaseClientDetails details = new BaseClientDetails(client.getClientId(),
+									null, client.getScopes(), client.getAuthorizedGrantTypes(), client
+											.getAuthorities());
+							details.setClientSecret(client.getSecret());
+							details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes()
+									.split(",")));
+							details.setRegisteredRedirectUri(Collections
+									.singleton("http://localhost:8082"));
+							return details;
+						})
+				.orElseThrow(
+						() -> new ClientRegistrationException(String.format(
+								"no client %s registered", clientId)));
+	}
 }
