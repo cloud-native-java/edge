@@ -14,8 +14,8 @@ import java.util.Map;
 @RequestMapping(method = RequestMethod.GET, value = "/greet/{name}")
 class DefaultGreetingsRestController {
 
-	@RequestMapping
-	Map<String, String> hi(@PathVariable String name) {
-		return Collections.singletonMap("greeting", "Hello, " + name + "!");
-	}
+ @RequestMapping
+ Map<String, String> hi(@PathVariable String name) {
+  return Collections.singletonMap("greeting", "Hello, " + name + "!");
+ }
 }

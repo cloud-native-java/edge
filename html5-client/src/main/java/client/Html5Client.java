@@ -18,26 +18,26 @@ import java.util.Map;
 @SpringBootApplication
 public class Html5Client {
 
-	private final DiscoveryClient discoveryClient;
+ private final DiscoveryClient discoveryClient;
 
-	@Autowired
-	public Html5Client(DiscoveryClient discoveryClient) {
-		this.discoveryClient = discoveryClient;
-	}
+ @Autowired
+ public Html5Client(DiscoveryClient discoveryClient) {
+  this.discoveryClient = discoveryClient;
+ }
 
-	public static void main(String[] args) {
-		SpringApplication.run(Html5Client.class, args);
-	}
+ public static void main(String[] args) {
+  SpringApplication.run(Html5Client.class, args);
+ }
 
-	// <1>
-	@RequestMapping(value = "/greetings-client-uri", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-	Map<String, String> greetingsClientURI() throws Exception {
-		return discoveryClient
-				.getInstances("greetings-client")
-				.stream()
-				.findAny()
-				.map(
-						serviceInstance -> Collections.singletonMap("uri", serviceInstance.getUri()
-								.toString())).orElse(null);
-	}
+ // <1>
+ @RequestMapping(value = "/greetings-client-uri", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+ Map<String, String> greetingsClientURI() throws Exception {
+  return discoveryClient
+    .getInstances("greetings-client")
+    .stream()
+    .findAny()
+    .map(
+      serviceInstance -> Collections.singletonMap("uri", serviceInstance.getUri()
+        .toString())).orElse(null);
+ }
 }

@@ -10,6 +10,6 @@ import java.util.Map;
 @FeignClient(serviceId = "greetings-service")
 interface GreetingsClient {
 
-	@RequestMapping(method = RequestMethod.GET, value = "/greet/{name}")
-	Map<String, String> greet(@PathVariable("name") String name);
+ @RequestMapping(method = RequestMethod.GET, value = "/greet/{name}")
+ Map<String, String> greet(@PathVariable("name") String name);
 }

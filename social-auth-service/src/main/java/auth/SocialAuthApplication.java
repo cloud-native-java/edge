@@ -49,59 +49,59 @@ import java.util.stream.Stream;
 @SpringBootApplication
 public class SocialAuthApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(SocialAuthApplication.class, args);
-	}
+ public static void main(String[] args) {
+  SpringApplication.run(SocialAuthApplication.class, args);
+ }
 }
 
 @RestController
 class PrincipalRestController {
 
-	@RequestMapping({ "/user", "/me" })
-	Map<String, String> user(Principal principal) {
-		Map<String, String> map = new LinkedHashMap<>();
-		map.put("name", principal.getName());
-		return map;
-	}
+ @RequestMapping({ "/user", "/me" })
+ Map<String, String> user(Principal principal) {
+  Map<String, String> map = new LinkedHashMap<>();
+  map.put("name", principal.getName());
+  return map;
+ }
 }
 
 @Configuration
 @EnableResourceServer
 class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
-	@Override
-	public void configure(HttpSecurity http) throws Exception {
-		// @formatter:off
+ @Override
+ public void configure(HttpSecurity http) throws Exception {
+  // @formatter:off
         http.antMatcher("/me").authorizeRequests().anyRequest().authenticated();
         http.antMatcher("/user").authorizeRequests().anyRequest().authenticated();
         // @formatter:on
-	}
+ }
 }
 
 @Configuration
 @EnableAuthorizationServer
 class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter implements
-		AuthorizationServerConfigurer {
+  AuthorizationServerConfigurer {
 
-	private final OAuth2ClientContext oauth2ClientContext;
-	private final ClientDetailsService clientDetailsService;
+ private final OAuth2ClientContext oauth2ClientContext;
+ private final ClientDetailsService clientDetailsService;
 
-	@Autowired
-	public AuthorizationServerConfiguration(OAuth2ClientContext oauth2ClientContext,
-			ClientDetailsService clientDetailsService) {
-		super();
-		this.oauth2ClientContext = oauth2ClientContext;
-		this.clientDetailsService = clientDetailsService;
-	}
+ @Autowired
+ public AuthorizationServerConfiguration(OAuth2ClientContext oauth2ClientContext,
+   ClientDetailsService clientDetailsService) {
+  super();
+  this.oauth2ClientContext = oauth2ClientContext;
+  this.clientDetailsService = clientDetailsService;
+ }
 
-	@Override
-	public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-			throws Exception {
-	}
+ @Override
+ public void configure(AuthorizationServerEndpointsConfigurer endpoints)
+   throws Exception {
+ }
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
-		// @formatter:off
+ @Override
+ protected void configure(HttpSecurity http) throws Exception {
+  // @formatter:off
         http.antMatcher("/**").authorizeRequests()
                 .antMatchers("/", "/login**", "/webjars/**").permitAll().anyRequest()
                 .authenticated().and().exceptionHandling()
@@ -110,99 +110,99 @@ class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter impl
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
                 .addFilterBefore(ssoFilter(), BasicAuthenticationFilter.class);
         // @formatter:on
-	}
+ }
 
-	@Bean
-	FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(filter);
-		registration.setOrder(-100);
-		return registration;
-	}
+ @Bean
+ FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
+  FilterRegistrationBean registration = new FilterRegistrationBean();
+  registration.setFilter(filter);
+  registration.setOrder(-100);
+  return registration;
+ }
 
-	@Bean
-	@ConfigurationProperties("github")
-	ClientResources github() {
-		return new ClientResources();
-	}
+ @Bean
+ @ConfigurationProperties("github")
+ ClientResources github() {
+  return new ClientResources();
+ }
 
-	@Bean
-	@ConfigurationProperties("facebook")
-	ClientResources facebook() {
-		return new ClientResources();
-	}
+ @Bean
+ @ConfigurationProperties("facebook")
+ ClientResources facebook() {
+  return new ClientResources();
+ }
 
-	private Filter ssoFilter() {
-		CompositeFilter filter = new CompositeFilter();
-		List<Filter> filters = Arrays.asList(ssoFilter(facebook(), "/login/facebook"),
-				ssoFilter(github(), "/login/github"));
-		filter.setFilters(filters);
-		return filter;
-	}
+ private Filter ssoFilter() {
+  CompositeFilter filter = new CompositeFilter();
+  List<Filter> filters = Arrays.asList(ssoFilter(facebook(), "/login/facebook"),
+    ssoFilter(github(), "/login/github"));
+  filter.setFilters(filters);
+  return filter;
+ }
 
-	private Filter ssoFilter(ClientResources client, String path) {
+ private Filter ssoFilter(ClientResources client, String path) {
 
-		OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-				path);
+  OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
+    path);
 
-		OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(),
-				oauth2ClientContext);
-		filter.setRestTemplate(template);
-		filter.setTokenServices(new UserInfoTokenServices(client.getResource()
-				.getUserInfoUri(), client.getClient().getClientId()));
-		return filter;
-	}
+  OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(),
+    oauth2ClientContext);
+  filter.setRestTemplate(template);
+  filter.setTokenServices(new UserInfoTokenServices(client.getResource()
+    .getUserInfoUri(), client.getClient().getClientId()));
+  return filter;
+ }
 
-	@Override
-	public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
-	}
+ @Override
+ public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+ }
 
-	@Override
-	public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-		clients.withClientDetails(this.clientDetailsService);
-	}
+ @Override
+ public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
+  clients.withClientDetails(this.clientDetailsService);
+ }
 }
 
 @Component
 class DataCommandLineRunner implements CommandLineRunner {
 
-	private final AccountRepository accountRepository;
+ private final AccountRepository accountRepository;
 
-	private final ClientRepository clientRepository;
+ private final ClientRepository clientRepository;
 
-	@Autowired
-	public DataCommandLineRunner(AccountRepository accountRepository,
-			ClientRepository clientRepository) {
-		this.accountRepository = accountRepository;
-		this.clientRepository = clientRepository;
-	}
+ @Autowired
+ public DataCommandLineRunner(AccountRepository accountRepository,
+   ClientRepository clientRepository) {
+  this.accountRepository = accountRepository;
+  this.clientRepository = clientRepository;
+ }
 
-	@Override
-	public void run(String... args) throws Exception {
+ @Override
+ public void run(String... args) throws Exception {
 
-		Stream
-				.of("dsyer,cloud", "pwebb,boot", "mminella,batch", "rwinch,security",
-						"jlong,spring").map(s -> s.split(","))
-				.forEach(tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
+  Stream
+    .of("dsyer,cloud", "pwebb,boot", "mminella,batch", "rwinch,security",
+      "jlong,spring").map(s -> s.split(","))
+    .forEach(tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
 
-		Stream.of("html5,secret", "android,secret").map(x -> x.split(","))
-				.forEach(x -> clientRepository.save(new Client(x[0], x[1])));
-	}
+  Stream.of("html5,secret", "android,secret").map(x -> x.split(","))
+    .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
+ }
 }
 
 class ClientResources {
 
-	@NestedConfigurationProperty
-	private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
+ @NestedConfigurationProperty
+ private AuthorizationCodeResourceDetails client = new AuthorizationCodeResourceDetails();
 
-	@NestedConfigurationProperty
-	private ResourceServerProperties resource = new ResourceServerProperties();
+ @NestedConfigurationProperty
+ private ResourceServerProperties resource = new ResourceServerProperties();
 
-	public AuthorizationCodeResourceDetails getClient() {
-		return client;
-	}
+ public AuthorizationCodeResourceDetails getClient() {
+  return client;
+ }
 
-	public ResourceServerProperties getResource() {
-		return resource;
-	}
+ public ResourceServerProperties getResource() {
+  return resource;
+ }
 }

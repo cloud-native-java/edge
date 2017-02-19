@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 @SpringBootApplication
 public class AuthServiceApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(AuthServiceApplication.class, args);
-	}
+ public static void main(String[] args) {
+  SpringApplication.run(AuthServiceApplication.class, args);
+ }
 }

@@ -18,51 +18,51 @@ import javax.servlet.http.HttpServletResponse;
 @Component
 class ThrottlingZuulFilter extends ZuulFilter {
 
-	private final HttpStatus tooManyRequests = HttpStatus.TOO_MANY_REQUESTS;
+ private final HttpStatus tooManyRequests = HttpStatus.TOO_MANY_REQUESTS;
 
-	private final RateLimiter rateLimiter;
+ private final RateLimiter rateLimiter;
 
-	@Autowired
-	public ThrottlingZuulFilter(RateLimiter rateLimiter) {
-		this.rateLimiter = rateLimiter;
-	}
+ @Autowired
+ public ThrottlingZuulFilter(RateLimiter rateLimiter) {
+  this.rateLimiter = rateLimiter;
+ }
 
-	@Override
-	public String filterType() {
-		return "pre";
-	}
+ @Override
+ public String filterType() {
+  return "pre";
+ }
 
-	@Override
-	public int filterOrder() {
-		return Ordered.HIGHEST_PRECEDENCE;
-	}
+ @Override
+ public int filterOrder() {
+  return Ordered.HIGHEST_PRECEDENCE;
+ }
 
-	@Override
-	public boolean shouldFilter() {
-		return true;
-	}
+ @Override
+ public boolean shouldFilter() {
+  return true;
+ }
 
-	@Override
-	public Object run() {
-		try {
-			RequestContext currentContext = RequestContext.getCurrentContext();
-			HttpServletResponse response = currentContext.getResponse();
+ @Override
+ public Object run() {
+  try {
+   RequestContext currentContext = RequestContext.getCurrentContext();
+   HttpServletResponse response = currentContext.getResponse();
 
-			if (!rateLimiter.tryAcquire()) {
+   if (!rateLimiter.tryAcquire()) {
 
-				response.setContentType(MediaType.TEXT_PLAIN_VALUE);
-				response.setStatus(this.tooManyRequests.value());
-				response.getWriter().append(this.tooManyRequests.getReasonPhrase());
+    response.setContentType(MediaType.TEXT_PLAIN_VALUE);
+    response.setStatus(this.tooManyRequests.value());
+    response.getWriter().append(this.tooManyRequests.getReasonPhrase());
 
-				currentContext.setSendZuulResponse(false);
+    currentContext.setSendZuulResponse(false);
 
-				throw new ZuulException(this.tooManyRequests.getReasonPhrase(),
-						this.tooManyRequests.value(), this.tooManyRequests.getReasonPhrase());
-			}
-		}
-		catch (Exception e) {
-			ReflectionUtils.rethrowRuntimeException(e);
-		}
-		return null;
-	}
+    throw new ZuulException(this.tooManyRequests.getReasonPhrase(),
+      this.tooManyRequests.value(), this.tooManyRequests.getReasonPhrase());
+   }
+  }
+  catch (Exception e) {
+   ReflectionUtils.rethrowRuntimeException(e);
+  }
+  return null;
+ }
 }

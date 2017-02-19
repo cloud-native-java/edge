@@ -13,19 +13,19 @@ import java.util.Map;
 @RequestMapping(method = RequestMethod.GET, value = "/greet/{name}")
 public class ProxyAwareGreetingsRestController {
 
-	private Log log = LogFactory.getLog(getClass());
+ private Log log = LogFactory.getLog(getClass());
 
-	@RequestMapping(headers = "x-forwarded-for")
-	Map<String, String> hi(@PathVariable String name,
-			@RequestHeader("x-forwarded-for") String forwardedFor,
-			@RequestHeader("x-forwarded-proto") String proto,
-			@RequestHeader("x-forwarded-host") String host,
-			@RequestHeader("x-forwarded-port") int port,
-			@RequestHeader("x-forwarded-prefix") String prefix) {
+ @RequestMapping(headers = "x-forwarded-for")
+ Map<String, String> hi(@PathVariable String name,
+   @RequestHeader("x-forwarded-for") String forwardedFor,
+   @RequestHeader("x-forwarded-proto") String proto,
+   @RequestHeader("x-forwarded-host") String host,
+   @RequestHeader("x-forwarded-port") int port,
+   @RequestHeader("x-forwarded-prefix") String prefix) {
 
-		log.info(String.format("responded to a proxied request debugPrincipal %s://%s:%s "
-				+ "with prefix %s for service %s.", proto, host, port, prefix, forwardedFor));
+  log.info(String.format("responded to a proxied request debugPrincipal %s://%s:%s "
+    + "with prefix %s for service %s.", proto, host, port, prefix, forwardedFor));
 
-		return Collections.singletonMap("greeting", "Hello, " + name + "!");
-	}
+  return Collections.singletonMap("greeting", "Hello, " + name + "!");
+ }
 }

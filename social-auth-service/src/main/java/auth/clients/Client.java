@@ -9,55 +9,55 @@ import java.util.stream.Collectors;
 @Entity
 public class Client {
 
-	@Id
-	@GeneratedValue
-	private Long id;
+ @Id
+ @GeneratedValue
+ private Long id;
 
-	private String clientId;
-	private String secret;
-	private String scopes = from("openid");
-	private String authorizedGrantTypes = from("authorization_code", "refresh_token",
-			"password");
-	private String authorities = from("ROLE_USER", "ROLE_ADMIN");
-	private String autoApproveScopes = from(".*");
+ private String clientId;
+ private String secret;
+ private String scopes = from("openid");
+ private String authorizedGrantTypes = from("authorization_code", "refresh_token",
+   "password");
+ private String authorities = from("ROLE_USER", "ROLE_ADMIN");
+ private String autoApproveScopes = from(".*");
 
-	public Client(String clientId, String clientSecret) {
-		this.clientId = clientId;
-		this.secret = clientSecret;
-	}
+ public Client(String clientId, String clientSecret) {
+  this.clientId = clientId;
+  this.secret = clientSecret;
+ }
 
-	Client() {
-	}
+ Client() {
+ }
 
-	private static String from(String... arr) {
-		return Arrays.stream(arr).collect(Collectors.joining(","));
-	}
+ private static String from(String... arr) {
+  return Arrays.stream(arr).collect(Collectors.joining(","));
+ }
 
-	public String getScopes() {
-		return scopes;
-	}
+ public String getScopes() {
+  return scopes;
+ }
 
-	public String getAuthorizedGrantTypes() {
-		return authorizedGrantTypes;
-	}
+ public String getAuthorizedGrantTypes() {
+  return authorizedGrantTypes;
+ }
 
-	public String getAuthorities() {
-		return authorities;
-	}
+ public String getAuthorities() {
+  return authorities;
+ }
 
-	public String getAutoApproveScopes() {
-		return autoApproveScopes;
-	}
+ public String getAutoApproveScopes() {
+  return autoApproveScopes;
+ }
 
-	public Long getId() {
-		return id;
-	}
+ public Long getId() {
+  return id;
+ }
 
-	public String getClientId() {
-		return clientId;
-	}
+ public String getClientId() {
+  return clientId;
+ }
 
-	public String getSecret() {
-		return secret;
-	}
+ public String getSecret() {
+  return secret;
+ }
 }

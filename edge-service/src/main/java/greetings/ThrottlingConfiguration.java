@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 class ThrottlingConfiguration {
 
-	@Bean
-	RateLimiter rateLimiter() {
-		return RateLimiter.create(1.0D / 10.0D);
-	}
+ @Bean
+ RateLimiter rateLimiter() {
+  return RateLimiter.create(1.0D / 10.0D);
+ }
 }
