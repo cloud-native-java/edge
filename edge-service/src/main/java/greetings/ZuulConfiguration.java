@@ -13,11 +13,11 @@ import org.springframework.context.annotation.Configuration;
 class ZuulConfiguration {
 
  @Bean
- CommandLineRunner commandLineRunner(RouteLocator routeLocator) {
+ CommandLineRunner commandLineRunner(RouteLocator routeLocator) { // <1>
   Log log = LogFactory.getLog(getClass());
   return args -> routeLocator.getRoutes().forEach(
-    r -> log.info(String.format("%s (%s) %s", r.getId(), r.getLocation(),
-      r.getFullPath())));
+   r -> log.info(String.format("%s (%s) %s", r.getId(), r.getLocation(),
+    r.getFullPath())));
  }
 
 }

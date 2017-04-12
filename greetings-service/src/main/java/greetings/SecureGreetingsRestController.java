@@ -17,7 +17,7 @@ public class SecureGreetingsRestController {
 
  @RequestMapping
  Map<String, String> hi(@PathVariable String name, Principal p) {
-  return Collections.singletonMap("greeting", "Hello, " + name + " from " + p.getName()
-    + "!");
+  return Collections.singletonMap("greeting",
+   "Hello, " + name + " from " + p.getName() + "!");
  }
 }

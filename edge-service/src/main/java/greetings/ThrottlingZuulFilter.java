@@ -27,21 +27,25 @@ class ThrottlingZuulFilter extends ZuulFilter {
   this.rateLimiter = rateLimiter;
  }
 
+ // <1>
  @Override
  public String filterType() {
   return "pre";
  }
 
+ // <2>
  @Override
  public int filterOrder() {
   return Ordered.HIGHEST_PRECEDENCE;
  }
 
+ // <3>
  @Override
  public boolean shouldFilter() {
   return true;
  }
 
+ // <4>
  @Override
  public Object run() {
   try {
@@ -50,14 +54,16 @@ class ThrottlingZuulFilter extends ZuulFilter {
 
    if (!rateLimiter.tryAcquire()) {
 
+    // <5>
     response.setContentType(MediaType.TEXT_PLAIN_VALUE);
     response.setStatus(this.tooManyRequests.value());
     response.getWriter().append(this.tooManyRequests.getReasonPhrase());
 
+    // <6>
     currentContext.setSendZuulResponse(false);
 
     throw new ZuulException(this.tooManyRequests.getReasonPhrase(),
-      this.tooManyRequests.value(), this.tooManyRequests.getReasonPhrase());
+     this.tooManyRequests.value(), this.tooManyRequests.getReasonPhrase());
    }
   }
   catch (Exception e) {

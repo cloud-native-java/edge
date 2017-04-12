@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 public class ClientConfiguration {
 
  private final Set<String> discoveryClientIps = new ConcurrentSkipListSet<>();
+
  private final DiscoveryClient discoveryClient;
 
  @Autowired
@@ -30,9 +31,10 @@ public class ClientConfiguration {
 
  @EventListener(HeartbeatEvent.class)
  public void refreshBasedOnHeartbeat() {
-  List<String> addresses = this.discoveryClient.getInstances("greetings-client")
-    .stream().map(si -> "http://" + si.getHost() + ':' + si.getPort() + '/')
-    .collect(Collectors.toList());
+  List<String> addresses = this.discoveryClient
+   .getInstances("greetings-client").stream()
+   .map(si -> "http://" + si.getHost() + ':' + si.getPort() + '/')
+   .collect(Collectors.toList());
 
   synchronized (this.discoveryClientIps) {
    this.discoveryClientIps.clear();
@@ -42,33 +44,33 @@ public class ClientConfiguration {
 
  @Bean
  ClientDetailsService clientDetailsService(DiscoveryClient dc,
-   ClientRepository clientRepository) {
+  ClientRepository clientRepository) {
   return clientId -> clientRepository
-    .findByClientId(clientId)
-    .map(
-      client -> {
-       BaseClientDetails details = new BaseClientDetails(client.getClientId(),
-         null, client.getScopes(), client.getAuthorizedGrantTypes(), client
-           .getAuthorities());
-       details.setClientSecret(client.getSecret());
+   .findByClientId(clientId)
+   .map(
+    client -> {
+     BaseClientDetails details = new BaseClientDetails(client.getClientId(),
+      null, client.getScopes(), client.getAuthorizedGrantTypes(), client
+       .getAuthorities());
+     details.setClientSecret(client.getSecret());
 
-       // <1>
-       // details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
+     // <1>
+     // details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
 
-       // <2>
-       String greetingsClientRedirectUri = this.discoveryClientIps
-         .stream()
-         .findAny()
-         .orElseThrow(
-           () -> new ClientRegistrationException(
-             "couldn't find and bind a greetings-client IP"));
+     // <2>
+     String greetingsClientRedirectUri = this.discoveryClientIps
+      .stream()
+      .findAny()
+      .orElseThrow(
+       () -> new ClientRegistrationException(
+        "couldn't find and bind a greetings-client IP"));
 
-       details.setRegisteredRedirectUri(Collections
-         .singleton(greetingsClientRedirectUri));
-       return details;
-      })
-    .orElseThrow(
-      () -> new ClientRegistrationException(String.format(
-        "no client %s registered", clientId)));
+     details.setRegisteredRedirectUri(Collections
+      .singleton(greetingsClientRedirectUri));
+     return details;
+    })
+   .orElseThrow(
+    () -> new ClientRegistrationException(String.format(
+     "no client %s registered", clientId)));
  }
 }

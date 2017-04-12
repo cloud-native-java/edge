@@ -27,9 +27,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class AuthServiceApplicationTests {
 
  private static AtomicInteger PORT = new AtomicInteger();
+
  private final Log log = LogFactory.getLog(getClass());
+
  private ApplicationContext applicationContext;
+
  private RestTemplate restTemplate;
+
  private int port = 0;
 
  @Before
@@ -50,6 +54,7 @@ public class AuthServiceApplicationTests {
 
   // <2>
   LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>() {
+
    {
     add("client_secret", clientSecret);
     add("client_id", client);
@@ -62,17 +67,17 @@ public class AuthServiceApplicationTests {
 
   // <3>
   String token = Base64Utils.encodeToString((client + ":" + clientSecret)
-    .getBytes(Charset.forName("UTF-8")));
+   .getBytes(Charset.forName("UTF-8")));
 
   RequestEntity<LinkedMultiValueMap<String, String>> requestEntity = RequestEntity
-    .post(uri).accept(MediaType.APPLICATION_JSON)
-    .header("Authorization", "Basic " + token).body(map);
+   .post(uri).accept(MediaType.APPLICATION_JSON)
+   .header("Authorization", "Basic " + token).body(map);
 
   ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
   };
 
-  ResponseEntity<Map<String, String>> responseEntity = this.restTemplate.exchange(
-    requestEntity, type);
+  ResponseEntity<Map<String, String>> responseEntity = this.restTemplate
+   .exchange(requestEntity, type);
 
   // <4>
   Map<String, String> body = responseEntity.getBody();

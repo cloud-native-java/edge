@@ -14,11 +14,16 @@ public class Client {
  private Long id;
 
  private String clientId;
+
  private String secret;
+
  private String scopes = from("openid");
- private String authorizedGrantTypes = from("authorization_code", "refresh_token",
-   "password");
+
+ private String authorizedGrantTypes = from("authorization_code",
+  "refresh_token", "password");
+
  private String authorities = from("ROLE_USER", "ROLE_ADMIN");
+
  private String autoApproveScopes = from(".*");
 
  public Client(String clientId, String clientSecret) {

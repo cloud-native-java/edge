@@ -60,8 +60,8 @@ public class TokenRelayAutoConfiguration {
   @Bean
   RequestInterceptor requestInterceptor(OAuth2ClientContext clientContext) {
    return requestTemplate -> requestTemplate.header(HttpHeaders.AUTHORIZATION,
-     clientContext.getAccessToken().getTokenType() + ' '
-       + clientContext.getAccessToken().getValue());
+    clientContext.getAccessToken().getTokenType() + ' '
+     + clientContext.getAccessToken().getValue());
   }
  }
 }

@@ -14,9 +14,10 @@ import org.springframework.stereotype.Component;
 class RoutesListener {
 
  private final RouteLocator routeLocator;
+
  private final DiscoveryClient discoveryClient;
 
- private Log logger = LogFactory.getLog(getClass());
+ private Log log = LogFactory.getLog(getClass());
 
  @Autowired
  public RoutesListener(DiscoveryClient dc, RouteLocator rl) {
@@ -27,15 +28,16 @@ class RoutesListener {
  // <1>
  @EventListener(HeartbeatEvent.class)
  public void onHeartbeatEvent(HeartbeatEvent event) {
-  this.logger.info("onHeartbeatEvent()");
+  this.log.info("onHeartbeatEvent()");
   this.discoveryClient.getServices().stream().map(x -> " " + x)
-    .forEach(this.logger::info);
+   .forEach(this.log::info);
  }
 
  // <2>
  @EventListener(RoutesRefreshedEvent.class)
  public void onRoutesRefreshedEvent(RoutesRefreshedEvent event) {
-  this.logger.info("onRoutesRefreshedEvent()");
-  this.routeLocator.getRoutes().stream().map(x -> " " + x).forEach(this.logger::info);
+  this.log.info("onRoutesRefreshedEvent()");
+  this.routeLocator.getRoutes().stream().map(x -> " " + x)
+   .forEach(this.log::info);
  }
 }

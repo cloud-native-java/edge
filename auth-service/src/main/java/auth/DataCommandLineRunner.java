@@ -19,7 +19,7 @@ class DataCommandLineRunner implements CommandLineRunner {
 
  @Autowired
  public DataCommandLineRunner(AccountRepository accountRepository,
-   ClientRepository clientRepository) {
+  ClientRepository clientRepository) {
   this.accountRepository = accountRepository;
   this.clientRepository = clientRepository;
  }
@@ -28,11 +28,13 @@ class DataCommandLineRunner implements CommandLineRunner {
  public void run(String... args) throws Exception {
 
   Stream
-    .of("dsyer,cloud", "pwebb,boot", "mminella,batch", "rwinch,security",
-      "jlong,spring").map(s -> s.split(","))
-    .forEach(tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
+   .of("dsyer,cloud", "pwebb,boot", "mminella,batch", "rwinch,security",
+    "jlong,spring")
+   .map(s -> s.split(","))
+   .forEach(
+    tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
 
   Stream.of("html5,secret", "android,secret").map(x -> x.split(","))
-    .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
+   .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
  }
 }

@@ -40,7 +40,7 @@ class CorsFilter implements Filter {
  // <2>
  @Override
  public void doFilter(ServletRequest req, ServletResponse res, FilterChain chain)
-   throws IOException, ServletException {
+  throws IOException, ServletException {
   HttpServletResponse response = HttpServletResponse.class.cast(res);
   HttpServletRequest request = HttpServletRequest.class.cast(req);
   String originHeaderValue = request.getHeader(HttpHeaders.ORIGIN);
@@ -48,7 +48,8 @@ class CorsFilter implements Filter {
 
   // <3>
   if (clientAllowed) {
-   response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, originHeaderValue);
+   response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+    originHeaderValue);
   }
   chain.doFilter(req, res);
  }
@@ -59,12 +60,12 @@ class CorsFilter implements Filter {
    URI originUri = URI.create(origin);
    String match = originUri.getHost() + ':' + originUri.getPort();
    return this.catalog
-     .keySet()
-     .stream()
-     .anyMatch(
-       serviceId -> this.catalog.get(serviceId).stream()
-         .map(si -> si.getHost() + ':' + si.getPort())
-         .anyMatch(hp -> hp.equalsIgnoreCase(match)));
+    .keySet()
+    .stream()
+    .anyMatch(
+     serviceId -> this.catalog.get(serviceId).stream()
+      .map(si -> si.getHost() + ':' + si.getPort())
+      .anyMatch(hp -> hp.equalsIgnoreCase(match)));
   }
   return false;
  }
@@ -75,11 +76,9 @@ class CorsFilter implements Filter {
   this.refreshCatalog();
  }
 
- // we don't want to constantly hit the registry,
- // so proactively cache updates
  private void refreshCatalog() {
   discoveryClient.getServices().forEach(
-    svc -> this.catalog.put(svc, this.discoveryClient.getInstances(svc)));
+   svc -> this.catalog.put(svc, this.discoveryClient.getInstances(svc)));
  }
 
  @Override

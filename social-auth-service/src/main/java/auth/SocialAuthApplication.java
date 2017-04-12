@@ -80,15 +80,17 @@ class ResourceServerConfiguration extends ResourceServerConfigurerAdapter {
 
 @Configuration
 @EnableAuthorizationServer
-class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter implements
-  AuthorizationServerConfigurer {
+class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter
+ implements AuthorizationServerConfigurer {
 
  private final OAuth2ClientContext oauth2ClientContext;
+
  private final ClientDetailsService clientDetailsService;
 
  @Autowired
- public AuthorizationServerConfiguration(OAuth2ClientContext oauth2ClientContext,
-   ClientDetailsService clientDetailsService) {
+ public AuthorizationServerConfiguration(
+  OAuth2ClientContext oauth2ClientContext,
+  ClientDetailsService clientDetailsService) {
   super();
   this.oauth2ClientContext = oauth2ClientContext;
   this.clientDetailsService = clientDetailsService;
@@ -96,7 +98,7 @@ class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter impl
 
  @Override
  public void configure(AuthorizationServerEndpointsConfigurer endpoints)
-   throws Exception {
+  throws Exception {
  }
 
  @Override
@@ -113,7 +115,8 @@ class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter impl
  }
 
  @Bean
- FilterRegistrationBean oauth2ClientFilterRegistration(OAuth2ClientContextFilter filter) {
+ FilterRegistrationBean oauth2ClientFilterRegistration(
+  OAuth2ClientContextFilter filter) {
   FilterRegistrationBean registration = new FilterRegistrationBean();
   registration.setFilter(filter);
   registration.setOrder(-100);
@@ -134,8 +137,9 @@ class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter impl
 
  private Filter ssoFilter() {
   CompositeFilter filter = new CompositeFilter();
-  List<Filter> filters = Arrays.asList(ssoFilter(facebook(), "/login/facebook"),
-    ssoFilter(github(), "/login/github"));
+  List<Filter> filters = Arrays.asList(
+   ssoFilter(facebook(), "/login/facebook"),
+   ssoFilter(github(), "/login/github"));
   filter.setFilters(filters);
   return filter;
  }
@@ -143,18 +147,19 @@ class AuthorizationServerConfiguration extends WebSecurityConfigurerAdapter impl
  private Filter ssoFilter(ClientResources client, String path) {
 
   OAuth2ClientAuthenticationProcessingFilter filter = new OAuth2ClientAuthenticationProcessingFilter(
-    path);
+   path);
 
   OAuth2RestTemplate template = new OAuth2RestTemplate(client.getClient(),
-    oauth2ClientContext);
+   oauth2ClientContext);
   filter.setRestTemplate(template);
   filter.setTokenServices(new UserInfoTokenServices(client.getResource()
-    .getUserInfoUri(), client.getClient().getClientId()));
+   .getUserInfoUri(), client.getClient().getClientId()));
   return filter;
  }
 
  @Override
- public void configure(AuthorizationServerSecurityConfigurer security) throws Exception {
+ public void configure(AuthorizationServerSecurityConfigurer security)
+  throws Exception {
  }
 
  @Override
@@ -172,7 +177,7 @@ class DataCommandLineRunner implements CommandLineRunner {
 
  @Autowired
  public DataCommandLineRunner(AccountRepository accountRepository,
-   ClientRepository clientRepository) {
+  ClientRepository clientRepository) {
   this.accountRepository = accountRepository;
   this.clientRepository = clientRepository;
  }
@@ -181,12 +186,14 @@ class DataCommandLineRunner implements CommandLineRunner {
  public void run(String... args) throws Exception {
 
   Stream
-    .of("dsyer,cloud", "pwebb,boot", "mminella,batch", "rwinch,security",
-      "jlong,spring").map(s -> s.split(","))
-    .forEach(tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
+   .of("dsyer,cloud", "pwebb,boot", "mminella,batch", "rwinch,security",
+    "jlong,spring")
+   .map(s -> s.split(","))
+   .forEach(
+    tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
 
   Stream.of("html5,secret", "android,secret").map(x -> x.split(","))
-    .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
+   .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
  }
 }
 
