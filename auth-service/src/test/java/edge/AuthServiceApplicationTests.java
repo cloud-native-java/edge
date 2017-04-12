@@ -7,6 +7,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerInitializedEvent;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -49,7 +50,7 @@ public class AuthServiceApplicationTests {
   URI uri = URI.create("http://localhost:" + this.port + "/uaa/oauth/token");
   String username = "jlong";
   String password = "spring";
-  String clientSecret = "secret";
+  String clientSecret = "password";
   String client = "html5";
 
   // <2>
@@ -94,5 +95,4 @@ public class AuthServiceApplicationTests {
    PORT.set(evt.getEmbeddedServletContainer().getPort());
   }
  }
-
 }

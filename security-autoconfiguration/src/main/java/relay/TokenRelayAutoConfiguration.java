@@ -16,9 +16,6 @@ import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilt
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.client.RestTemplate;
 
-// this works because we
-// add @EnableOAuth2Client
-// to the the services
 @Configuration
 @ConditionalOnWebApplication
 @ConditionalOnClass(EnableResourceServer.class)

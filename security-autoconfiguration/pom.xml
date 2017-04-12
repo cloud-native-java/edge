@@ -10,8 +10,8 @@
         <artifactId>edge</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-    <artifactId>edge-security-autoconfiguration</artifactId>
-    <name>edge/edge-security-autoconfiguration</name>
+    <artifactId>security-autoconfiguration</artifactId>
+    <name>edge/security-autoconfiguration</name>
     <dependencies>
         <dependency>
             <groupId>org.springframework.cloud</groupId>

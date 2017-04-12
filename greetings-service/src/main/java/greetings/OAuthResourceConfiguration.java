@@ -5,12 +5,12 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
-@Profile("secure")
-// <1>
 @Configuration
-@EnableResourceServer
+// <1>
+@Profile("secure")
 // <2>
-@EnableOAuth2Client
+@EnableResourceServer
 // <3>
+@EnableOAuth2Client
 class OAuthResourceConfiguration {
 }

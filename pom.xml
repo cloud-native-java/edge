@@ -16,7 +16,7 @@
         <!--
             cross cutting
         -->
-        <module>edge-security-autoconfiguration</module>
+        <module>security-autoconfiguration</module>
 
         <!--
             infrastructure

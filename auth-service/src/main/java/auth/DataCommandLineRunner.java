@@ -34,7 +34,7 @@ class DataCommandLineRunner implements CommandLineRunner {
    .forEach(
     tuple -> accountRepository.save(new Account(tuple[0], tuple[1], true)));
 
-  Stream.of("html5,secret", "android,secret").map(x -> x.split(","))
+  Stream.of("html5,password", "android,secret").map(x -> x.split(","))
    .forEach(x -> clientRepository.save(new Client(x[0], x[1])));
  }
 }

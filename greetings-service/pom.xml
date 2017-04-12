@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>cnj</groupId>
-            <artifactId>edge-security-autoconfiguration</artifactId>
+            <artifactId>security-autoconfiguration</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

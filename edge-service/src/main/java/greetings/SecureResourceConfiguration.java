@@ -7,13 +7,14 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 
 // <1>
-@Profile("sso")
+@Profile("secure")
 @Configuration
 @EnableResourceServer
-class SsoResourceConfiguration extends ResourceServerConfigurerAdapter {
+class SecureResourceConfiguration extends ResourceServerConfigurerAdapter {
 
  @Override
  public void configure(HttpSecurity http) throws Exception {
-  http.antMatcher("/api/**").authorizeRequests().anyRequest().authenticated();
+  http.antMatcher("/api/**").authorizeRequests() //<2>
+          .anyRequest().authenticated();
  }
 }

@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.security.Principal;
 
-@Profile("sso")
+@Profile("secure")
 @RestController
 class PrincipalRestController {
 

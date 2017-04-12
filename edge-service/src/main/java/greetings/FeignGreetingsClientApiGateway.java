@@ -6,8 +6,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
-@Profile("feign")
 // <1>
+@Profile("feign")
 @RestController
 @RequestMapping("/api")
 class FeignGreetingsClientApiGateway {
