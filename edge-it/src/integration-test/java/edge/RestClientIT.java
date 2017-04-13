@@ -14,23 +14,17 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.File;
 import java.util.*;
+import java.util.stream.Stream;
 
-/**
- * This IT tests that our client (in the
- * `edge-service`) can call the
- * downstream `greeting-service` through
- * a {@code RestTemplate} client or
- * through a Feign-based REST client.
- * Both should enjoy client-side
- * load-balancing thanks to Netflix
- * Ribbon.
- */
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class RestClientIT {
@@ -41,9 +35,9 @@ public class RestClientIT {
     @Autowired
     private CloudFoundryService service;
 
-    private final RestTemplate rt = new RestTemplate();
+    private RetryTemplate retryTemplate = new RetryTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
     private File eurekaManifest, edgeServiceManifest, greetingsServiceManifest;
-
     private Log log = LogFactory.getLog(getClass());
 
     private void setEnvironmentVariable(String appId, String k, String v) {
@@ -132,8 +126,24 @@ public class RestClientIT {
         Assert.assertTrue(this.eurekaManifest.exists());
         Assert.assertTrue(this.edgeServiceManifest.exists());
 
-        // todo destroy the existing apps
 
+        String eurekaAppId = this.appNameFromManifest(this.eurekaManifest);
+        String edgeServiceAppId = this.appNameFromManifest(this.edgeServiceManifest);
+        String greetingsServiceAppId = this.appNameFromManifest(this.greetingsServiceManifest);
+
+        Stream.of(edgeServiceAppId, greetingsServiceAppId, eurekaAppId)
+                .forEach(appId -> this.service.destroyApplicationIfExists(appId));
+
+        this.service.destroyServiceIfExists( eurekaAppId);
+    }
+
+    private String appNameFromManifest(File a) {
+        return this.service.applicationManifestFrom(a)
+                .entrySet()
+                .stream()
+                .map(e -> e.getValue().getName())
+                .findAny()
+                .orElse(null);
     }
 
     @Test
@@ -143,15 +153,21 @@ public class RestClientIT {
         testEdgeRestClient("Shafer", "/api/resttemplate/");
     }
 
-    private void testEdgeRestClient(String testName, String urlSuffix) {
+    private void testEdgeRestClient(String testName, String urlSuffix) throws Throwable {
         String root = this.service.urlForApplication("edge-service");
         String edgeServiceUrl = root + urlSuffix + testName;
-        String healthUrl = root + "/health" ;
-        ResponseEntity<String> responseEntity = this.rt.getForEntity(healthUrl, String.class);
-        log.info("health endpoint: "+ responseEntity.getBody());
-
-        ResponseEntity<String> response = this.rt.getForEntity(edgeServiceUrl, String.class);
-        String body = response.getBody();
+        String healthUrl = root + "/health";
+        ResponseEntity<String> responseEntity = this.restTemplate.getForEntity(healthUrl, String.class);
+        log.info("health endpoint: " + responseEntity.getBody());
+        String body = retryTemplate.execute((RetryCallback<String, Throwable>) context -> {
+            ResponseEntity<String> response = restTemplate.getForEntity(edgeServiceUrl, String.class);
+            if (!response.getStatusCode().is2xxSuccessful()) {
+                String msg = "couldn't get a valid response calling the edge service ";
+                this.log.info(msg);
+                throw new RuntimeException(msg + edgeServiceUrl);
+            }
+            return response.getBody();
+        });
         Assert.assertTrue(body.contains("Hello, " + testName));
     }
 
