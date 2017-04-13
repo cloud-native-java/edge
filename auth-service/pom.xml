@@ -12,6 +12,12 @@
     <name>edge/auth-service</name>
     <dependencies>
         <dependency>
+            <groupId>cnj</groupId>
+            <artifactId>service-registry</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-eureka</artifactId>
         </dependency>
