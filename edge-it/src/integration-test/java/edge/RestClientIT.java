@@ -17,13 +17,17 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootTest(classes = Config.class)
 public class RestClientIT extends AbstractEdgeTest {
 
+    private static boolean reset = false;
     private RetryTemplate retryTemplate = new RetryTemplate();
     private final RestTemplate restTemplate = new RestTemplate();
     private Log log = LogFactory.getLog(getClass());
 
     @Before
     public void before() throws Throwable {
-        this.defaultSetup();
+        if (!reset) {
+            this.defaultSetup(true);
+            reset = true; // this is a static so itll hopefully endure across test invocations in this class
+        }
     }
 
     private void testEdgeRestClient(String testName, String urlSuffix) throws Throwable {

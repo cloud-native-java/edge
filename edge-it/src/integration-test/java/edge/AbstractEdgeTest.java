@@ -25,7 +25,8 @@ public abstract class AbstractEdgeTest {
     @Autowired
     protected CloudFoundryService service;
 
-    protected File eurekaManifest, edgeServiceManifest, greetingsServiceManifest;
+    protected File root, eurekaManifest, edgeServiceManifest, greetingsServiceManifest;
+
     private Log log = LogFactory.getLog(getClass());
 
     protected void setEnvironmentVariable(String appId, String k, String v) {
@@ -96,34 +97,33 @@ public abstract class AbstractEdgeTest {
                     ApplicationManifest am = e.getValue();
                     String appId = am.getName();
                     if (!this.service.applicationExists(appId))
-                        this.service.pushApplicationUsingManifest(f, am, true);
+                        this.service.pushApplicationUsingManifest(f, am, false);
                     return appId;
                 })
                 .findAny()
                 .orElse(null);
     }
 
-    protected void defaultSetup() throws Throwable {
+    protected void defaultSetup(boolean delete) throws Throwable {
 
 
-        File root = new File(".");
+        this.root = new File(".");
         this.eurekaManifest = new File(root, "../service-registry/manifest.yml");
         this.edgeServiceManifest = new File(root, "../edge-service/manifest.yml");
-        this.greetingsServiceManifest = new File(root,
-                "../greetings-service/manifest.yml");
+        this.greetingsServiceManifest = new File(root, "../greetings-service/manifest.yml");
         Assert.assertTrue(this.greetingsServiceManifest.exists());
         Assert.assertTrue(this.eurekaManifest.exists());
         Assert.assertTrue(this.edgeServiceManifest.exists());
-
 
         String eurekaAppId = this.appNameFromManifest(this.eurekaManifest);
         String edgeServiceAppId = this.appNameFromManifest(this.edgeServiceManifest);
         String greetingsServiceAppId = this.appNameFromManifest(this.greetingsServiceManifest);
 
-        Stream.of(edgeServiceAppId, greetingsServiceAppId, eurekaAppId)
-                .forEach(appId -> this.service.destroyApplicationIfExists(appId));
-
-        this.service.destroyServiceIfExists( eurekaAppId);
+        if (delete) {
+            Stream.of(edgeServiceAppId, greetingsServiceAppId, eurekaAppId)
+                    .forEach(appId -> this.service.destroyApplicationIfExists(appId));
+            this.service.destroyServiceIfExists(eurekaAppId);
+        }
     }
 
     protected String appNameFromManifest(File a) {
@@ -135,10 +135,10 @@ public abstract class AbstractEdgeTest {
                 .orElse(null);
     }
 
-
     protected void baselineDeploy(String[] ps) throws Throwable {
         String eurekaServiceId = deployEurekaService();
         this.log.info("deployed " + eurekaServiceId);
+
         String greetingsServiceId = this.deployGreetingsService();
         this.reconfigureApplicationProfile(greetingsServiceId, new String[]{"insecure"});
         this.setEnvironmentVariable(greetingsServiceId, "security.basic.enabled", "false");

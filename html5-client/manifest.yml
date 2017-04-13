@@ -2,6 +2,7 @@
 applications:
 - name: html5-client
   memory: 512M
+  host: html5-client-${random-word}
   instances: 1
   random-route: true
   buildpack: https://github.com/cloudfoundry/java-buildpack.git

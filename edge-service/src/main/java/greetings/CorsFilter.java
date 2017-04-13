@@ -1,5 +1,7 @@
 package greetings;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -25,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 class CorsFilter implements Filter {
-
+ private final Log log = LogFactory.getLog(getClass());
  private final Map<String, List<ServiceInstance>> catalog = new ConcurrentHashMap<>();
 
  private final DiscoveryClient discoveryClient;
@@ -51,6 +53,7 @@ class CorsFilter implements Filter {
    response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
     originHeaderValue);
   }
+
   chain.doFilter(req, res);
  }
 
@@ -58,15 +61,22 @@ class CorsFilter implements Filter {
  private boolean isClientAllowed(String origin) {
   if (StringUtils.hasText(origin)) {
    URI originUri = URI.create(origin);
-   String match = originUri.getHost() + ':' + originUri.getPort();
-   return this.catalog
-    .keySet()
-    .stream()
-    .anyMatch(
-     serviceId -> this.catalog.get(serviceId).stream()
-      .map(si -> si.getHost() + ':' + si.getPort())
-      .anyMatch(hp -> hp.equalsIgnoreCase(match)));
+   int port = originUri.getPort();
+   String match = originUri.getHost() + ':' + (port <=  0  ? 80 : port) ;
+   boolean svcMatch = this.catalog
+           .keySet()
+           .stream()
+           .anyMatch(
+                   serviceId -> this.catalog.get(serviceId).stream()
+                           .map(si -> si.getHost() + ':' + si.getPort())
+                           .anyMatch(hp -> hp.equalsIgnoreCase(match)));
+   this.log.info("does the request for " + origin +
+           "match anything in the DB using the following match condition (" +
+            match +")? "+ svcMatch);
+   return svcMatch;
   }
+  log.info( "returning false for isClientAllowed(" + origin + ")");
+
   return false;
  }
 

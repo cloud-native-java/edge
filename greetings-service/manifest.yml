@@ -2,6 +2,7 @@
 applications:
 - name: greetings-service
   host: greetings-service-${random-word}
+  timeout: 80
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
   path: target/greetings-service.jar
   services:
