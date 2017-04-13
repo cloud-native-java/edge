@@ -36,6 +36,11 @@
         -->
         <module>html5-client</module>
 
+        <!--
+            integration tests
+        -->
+        <module>edge-it</module>
+
     </modules>
     <build>
         <plugins>

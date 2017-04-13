@@ -1,13 +1,12 @@
 ---
 applications:
 - name: greetings-service
-  memory: 512M
-  instances: 1
-  random-route: true
+  host: greetings-service-${random-word}
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
   path: target/greetings-service.jar
   services:
     - service-registry
   env:
     DEBUG: "true"
-    SPRING_PROFILES_ACTIVE: cloud,secure
+    SPRING_PROFILES_ACTIVE: cloud
+#    ,secure

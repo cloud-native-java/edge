@@ -1,8 +1,6 @@
 ---
 applications:
 - name: service-registry
-  memory: 1G
-  instances: 1
-  random-route: true
+  host: service-registry-${random-word}
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
   path: target/service-registry.jar
