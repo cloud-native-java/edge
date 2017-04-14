@@ -22,7 +22,7 @@ import java.util.*;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.parseMediaType;
 
-@Ignore
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class CorsIT extends AbstractEdgeTest {
@@ -37,6 +37,7 @@ public class CorsIT extends AbstractEdgeTest {
   this.edgeServiceAppId = this.appNameFromManifest(this.edgeServiceManifest);
  }
 
+ @Ignore
  @Test
  public void testCors() throws Throwable {
   Map<String, String> e = Collections.singletonMap("security.basic.enabled",
