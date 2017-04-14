@@ -2,11 +2,11 @@ package edge;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.cloudfoundry.operations.applications.UnsetEnvironmentVariableApplicationRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -26,33 +26,43 @@ import java.util.Map;
 @SpringBootTest(classes = Config.class)
 public class PasswordGrantIT extends AbstractEdgeTest {
 
+    private Log log = LogFactory.getLog(getClass());
+    private final RestTemplate restTemplate = new RestTemplate();
 
     @Before
     public void before() throws Throwable {
         this.defaultSetup(true);
     }
 
-
-    private Log log = LogFactory.getLog(getClass());
-
-
-    private final RestTemplate restTemplate = new RestTemplate();
-
     @Test
     public void testAuth() throws Throwable {
+        ApplicationInstanceConfiguration callback =
+                (appId) -> {
+                    String prop = "security.basic.enabled";
+                    this.cloudFoundryOperations.applications()
+                            .unsetEnvironmentVariable(
+                                    UnsetEnvironmentVariableApplicationRequest
+                                            .builder()
+                                            .name(appId)
+                                            .variableName(prop).build()
+                            ).block();
+
+                    this.restart(appId);
+                };
         Map<String, String> env = new HashMap<>();
-        this.baselineDeploy(new String[]{"secure"}, env, new String[]{"secure", "sso"}, env);
         this.deployAuthService();
+        this.baselineDeploy(new String[]{"secure"}, env, callback,
+                new String[]{"secure", "sso"}, env, callback);
 
         // todo we should be able to call the
         // auth-service, get a token, then
         // call the edge-service/api/user
         // endpoint with that token
         String accessToken = this.obtainToken();
-        log.info("access_token = " + accessToken);
 
-        String userEndpointOnEdgeService = this.service.urlForApplication(this.appNameFromManifest(this.edgeServiceManifest)) + "/api/user";
-
+        String userEndpointOnEdgeService = this.service.urlForApplication(
+                this.appNameFromManifest(this.greetingsServiceManifest)) + "/greet/OAuth";
+//d259fbcd-56a8-49f7-9954-c969276219f1
         RequestEntity<Void> requestEntity =
                 RequestEntity
                         .<String>get(URI.create(userEndpointOnEdgeService))
@@ -90,12 +100,10 @@ public class PasswordGrantIT extends AbstractEdgeTest {
                 .post(uri).accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Basic " + token).body(map);
 
-        ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
-        };
-
+        ParameterizedTypeReference<Map<String, String>> type =
+                new ParameterizedTypeReference<Map<String, String>>() {
+                };
         ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(requestEntity, type);
-
-
         Map<String, String> body = responseEntity.getBody();
 
         String accessToken = body.get("access_token");

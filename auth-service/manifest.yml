@@ -2,6 +2,7 @@
 applications:
 - name: auth-service
   memory: 1G
+  host: auth-service-${random-word}
   instances: 1
   random-route: true
   buildpack: https://github.com/cloudfoundry/java-buildpack.git

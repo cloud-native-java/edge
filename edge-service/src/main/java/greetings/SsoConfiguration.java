@@ -7,11 +7,11 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
-@Profile("sso")
 // <1>
+@Profile("sso")
 @Configuration
-@EnableOAuth2Sso
 // <2>
+@EnableOAuth2Sso
 class SsoConfiguration extends WebSecurityConfigurerAdapter {
 
  @Override

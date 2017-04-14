@@ -22,55 +22,55 @@ import java.util.Collections;
 public class RestClientIT extends AbstractEdgeTest {
 
 
- private RetryTemplate retryTemplate = new RetryTemplate();
+    private RetryTemplate retryTemplate = new RetryTemplate();
 
- private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate();
 
- private Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(getClass());
 
- @Before
- public void before() throws Throwable {
-   this.defaultSetup(true);
- }
-
- private void testEdgeRestClient(String testName, String urlSuffix)
-  throws Throwable {
-  String root = this.service.urlForApplication("edge-service");
-  String edgeServiceUrl = root + urlSuffix + testName;
-  String healthUrl = root + "/health";
-  ResponseEntity<String> responseEntity = this.restTemplate.getForEntity(
-   healthUrl, String.class);
-  log.info("health endpoint: " + responseEntity.getBody());
-  String body = retryTemplate
-   .execute((RetryCallback<String, Throwable>) context -> {
-    ResponseEntity<String> response = restTemplate.getForEntity(edgeServiceUrl,
-     String.class);
-    if (!response.getStatusCode().is2xxSuccessful()) {
-     String msg = "couldn't get a valid response calling the edge service ";
-     this.log.info(msg);
-     throw new RuntimeException(msg + edgeServiceUrl);
+    @Before
+    public void before() throws Throwable {
+        this.defaultSetup(true);
     }
-    return response.getBody();
-   });
-  Assert.assertTrue(body.contains("Hello, " + testName));
- }
 
- @Test
- public void restClients() throws Throwable {
-  baselineDeploy(new String[] { "insecure" },
-   Collections.singletonMap("security.basic.enabled", "false"),
-   new String[] { "insecure" },
-   Collections.singletonMap("security.basic.enabled", "false"));
-  testEdgeRestClient("Shafer", "/api/resttemplate/");
- }
+    private void testEdgeRestClient(String testName, String urlSuffix)
+            throws Throwable {
+        String root = this.service.urlForApplication(appNameFromManifest(this.edgeServiceManifest));
+        String edgeServiceUrl = root + urlSuffix + testName;
+        String healthUrl = root + "/health";
+        ResponseEntity<String> responseEntity = this.restTemplate.getForEntity(
+                healthUrl, String.class);
+        log.info("health endpoint: " + responseEntity.getBody());
+        String body = retryTemplate
+                .execute((RetryCallback<String, Throwable>) context -> {
+                    ResponseEntity<String> response = restTemplate.getForEntity(edgeServiceUrl,
+                            String.class);
+                    if (!response.getStatusCode().is2xxSuccessful()) {
+                        String msg = "couldn't get a valid response calling the edge service ";
+                        this.log.info(msg);
+                        throw new RuntimeException(msg + edgeServiceUrl);
+                    }
+                    return response.getBody();
+                });
+        Assert.assertTrue(body.contains("Hello, " + testName));
+    }
 
- @Test
- public void testFeignClients() throws Throwable {
+    @Test
+    public void restClients() throws Throwable {
+        baselineDeploy(new String[]{"insecure"},
+                Collections.singletonMap("security.basic.enabled", "false"),
+                null, new String[]{"insecure"},
+                Collections.singletonMap("security.basic.enabled", "false"), null);
+        testEdgeRestClient("Shafer", "/api/resttemplate/");
+    }
 
-  baselineDeploy(new String[] { "insecure" },
-   Collections.singletonMap("security.basic.enabled", "false"),
-   "insecure,feign".split(","),
-   Collections.singletonMap("security.basic.enabled", "false"));
-  testEdgeRestClient("Watters", "/api/feign/");
- }
+    @Test
+    public void testFeignClients() throws Throwable {
+
+        baselineDeploy(new String[]{"insecure"},
+                Collections.singletonMap("security.basic.enabled", "false"),
+                null, "insecure,feign".split(","),
+                Collections.singletonMap("security.basic.enabled", "false"), null);
+        testEdgeRestClient("Watters", "/api/feign/");
+    }
 }

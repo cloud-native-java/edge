@@ -40,7 +40,7 @@ public class CorsIT extends AbstractEdgeTest {
   Map<String, String> e = Collections.singletonMap("security.basic.enabled",
    "false");
   this.baselineDeploy(new String[] { "insecure" }, e,
-   "cors,insecure".split(","), e);
+          null, "cors,insecure".split(","), e, null);
   this.deployHtml5Client();
 
   /*
