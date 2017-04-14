@@ -48,7 +48,6 @@ public class PasswordGrantIT extends AbstractEdgeTest {
    this.restart(appId);
   };
   Map<String, String> env = new HashMap<>();
-  this.deployAuthService();
   this.baselineDeploy(new String[] { "secure" }, env, callback, new String[] {
    "secure", "sso" }, env, callback);
 

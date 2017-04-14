@@ -150,7 +150,7 @@ public abstract class AbstractEdgeTest {
    .map(e -> e.getValue().getName()).findAny().orElse(null);
  }
 
- public static interface ApplicationInstanceConfiguration {
+ public   interface ApplicationInstanceConfiguration {
 
   void configure(String appId);
  }
@@ -163,6 +163,10 @@ public abstract class AbstractEdgeTest {
   // eureka
   String eurekaServiceId = deployEurekaService();
   this.log.info("deployed " + eurekaServiceId);
+
+  // auth
+  this.deployAuthService();
+
 
   // greetings
   String greetingsServiceId = this.deployGreetingsService();
