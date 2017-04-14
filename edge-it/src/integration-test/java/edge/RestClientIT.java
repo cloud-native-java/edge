@@ -21,7 +21,6 @@ import java.util.Collections;
 @SpringBootTest(classes = Config.class)
 public class RestClientIT extends AbstractEdgeTest {
 
- private static boolean reset = false;
 
  private RetryTemplate retryTemplate = new RetryTemplate();
 
@@ -31,10 +30,7 @@ public class RestClientIT extends AbstractEdgeTest {
 
  @Before
  public void before() throws Throwable {
-  if (!reset) {
    this.defaultSetup(true);
-   reset = true;
-  }
  }
 
  private void testEdgeRestClient(String testName, String urlSuffix)
