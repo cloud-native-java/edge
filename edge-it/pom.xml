@@ -9,14 +9,11 @@
         <artifactId>edge</artifactId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
-
     <artifactId>edge-it</artifactId>
+    <properties>
+        <selenium.version>3.3.1</selenium.version>
+    </properties>
     <dependencies>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>cnj</groupId>
             <artifactId>it-support</artifactId>

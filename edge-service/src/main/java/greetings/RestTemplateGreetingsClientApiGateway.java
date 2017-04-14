@@ -11,7 +11,7 @@ import org.springframework.web.client.RestTemplate;
 
 import java.util.Map;
 
-@Profile({"default", "insecure"})
+@Profile({ "default", "insecure" })
 @RestController
 @RequestMapping("/api")
 class RestTemplateGreetingsClientApiGateway {
@@ -23,7 +23,7 @@ class RestTemplateGreetingsClientApiGateway {
   this.restTemplate = restTemplate;
  }
 
- @GetMapping( "/resttemplate/{name}")
+ @GetMapping("/resttemplate/{name}")
  Map<String, String> restTemplate(@PathVariable String name) {
 
   ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {

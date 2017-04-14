@@ -17,49 +17,55 @@ import org.springframework.web.client.RestTemplate;
 @SpringBootTest(classes = Config.class)
 public class RestClientIT extends AbstractEdgeTest {
 
-    private static boolean reset = false;
-    private RetryTemplate retryTemplate = new RetryTemplate();
-    private final RestTemplate restTemplate = new RestTemplate();
-    private Log log = LogFactory.getLog(getClass());
+ private static boolean reset = false;
 
-    @Before
-    public void before() throws Throwable {
-        if (!reset) {
-            this.defaultSetup(true);
-            reset = true; // this is a static so itll hopefully endure across test invocations in this class
-        }
+ private RetryTemplate retryTemplate = new RetryTemplate();
+
+ private final RestTemplate restTemplate = new RestTemplate();
+
+ private Log log = LogFactory.getLog(getClass());
+
+ @Before
+ public void before() throws Throwable {
+  if (!reset) {
+   this.defaultSetup(true);
+   reset = true;
+  }
+ }
+
+ private void testEdgeRestClient(String testName, String urlSuffix)
+  throws Throwable {
+  String root = this.service.urlForApplication("edge-service");
+  String edgeServiceUrl = root + urlSuffix + testName;
+  String healthUrl = root + "/health";
+  ResponseEntity<String> responseEntity = this.restTemplate.getForEntity(
+   healthUrl, String.class);
+  log.info("health endpoint: " + responseEntity.getBody());
+  String body = retryTemplate
+   .execute((RetryCallback<String, Throwable>) context -> {
+    ResponseEntity<String> response = restTemplate.getForEntity(edgeServiceUrl,
+     String.class);
+    if (!response.getStatusCode().is2xxSuccessful()) {
+     String msg = "couldn't get a valid response calling the edge service ";
+     this.log.info(msg);
+     throw new RuntimeException(msg + edgeServiceUrl);
     }
+    return response.getBody();
+   });
+  Assert.assertTrue(body.contains("Hello, " + testName));
+ }
 
-    private void testEdgeRestClient(String testName, String urlSuffix) throws Throwable {
-        String root = this.service.urlForApplication("edge-service");
-        String edgeServiceUrl = root + urlSuffix + testName;
-        String healthUrl = root + "/health";
-        ResponseEntity<String> responseEntity = this.restTemplate.getForEntity(healthUrl, String.class);
-        log.info("health endpoint: " + responseEntity.getBody());
-        String body = retryTemplate.execute((RetryCallback<String, Throwable>) context -> {
-            ResponseEntity<String> response = restTemplate.getForEntity(edgeServiceUrl, String.class);
-            if (!response.getStatusCode().is2xxSuccessful()) {
-                String msg = "couldn't get a valid response calling the edge service ";
-                this.log.info(msg);
-                throw new RuntimeException(msg + edgeServiceUrl);
-            }
-            return response.getBody();
-        });
-        Assert.assertTrue(body.contains("Hello, " + testName));
-    }
+ @Test
+ public void restClients() throws Throwable {
+  String[] ps = { "insecure" };
+  baselineDeploy(ps);
+  testEdgeRestClient("Shafer", "/api/resttemplate/");
+ }
 
-    @Test
-    public void restClients() throws Throwable {
-        String[] ps = {"insecure"};
-        baselineDeploy(ps);
-        testEdgeRestClient("Shafer", "/api/resttemplate/");
-    }
-
-    @Test
-    public void testFeignClients() throws Throwable {
-        String[] ps = {"insecure", "feign"};
-        baselineDeploy(ps);
-        testEdgeRestClient("Watters", "/api/feign/");
-    }
-
+ @Test
+ public void testFeignClients() throws Throwable {
+  String[] ps = { "insecure", "feign" };
+  baselineDeploy(ps);
+  testEdgeRestClient("Watters", "/api/feign/");
+ }
 }

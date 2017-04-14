@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +28,9 @@ import java.util.concurrent.ConcurrentHashMap;
 @Component
 @Order(Ordered.HIGHEST_PRECEDENCE + 10)
 class CorsFilter implements Filter {
+
  private final Log log = LogFactory.getLog(getClass());
+
  private final Map<String, List<ServiceInstance>> catalog = new ConcurrentHashMap<>();
 
  private final DiscoveryClient discoveryClient;
@@ -45,7 +48,7 @@ class CorsFilter implements Filter {
   throws IOException, ServletException {
   HttpServletResponse response = HttpServletResponse.class.cast(res);
   HttpServletRequest request = HttpServletRequest.class.cast(req);
-  String originHeaderValue = request.getHeader(HttpHeaders.ORIGIN);
+  String originHeaderValue = originFor(request);
   boolean clientAllowed = isClientAllowed(originHeaderValue);
 
   // <3>
@@ -62,20 +65,20 @@ class CorsFilter implements Filter {
   if (StringUtils.hasText(origin)) {
    URI originUri = URI.create(origin);
    int port = originUri.getPort();
-   String match = originUri.getHost() + ':' + (port <=  0  ? 80 : port) ;
+   String match = originUri.getHost() + ':' + (port <= 0 ? 80 : port);
    boolean svcMatch = this.catalog
-           .keySet()
-           .stream()
-           .anyMatch(
-                   serviceId -> this.catalog.get(serviceId).stream()
-                           .map(si -> si.getHost() + ':' + si.getPort())
-                           .anyMatch(hp -> hp.equalsIgnoreCase(match)));
-   this.log.info("does the request for " + origin +
-           "match anything in the DB using the following match condition (" +
-            match +")? "+ svcMatch);
+    .keySet()
+    .stream()
+    .anyMatch(
+     serviceId -> this.catalog.get(serviceId).stream()
+      .map(si -> si.getHost() + ':' + si.getPort())
+      .anyMatch(hp -> hp.equalsIgnoreCase(match)));
+   this.log.info("does the request for " + origin
+    + "match anything in the DB using the following match condition (" + match
+    + ")? " + svcMatch);
    return svcMatch;
   }
-  log.info( "returning false for isClientAllowed(" + origin + ")");
+  log.info("returning false for isClientAllowed(" + origin + ")");
 
   return false;
  }
@@ -97,5 +100,10 @@ class CorsFilter implements Filter {
 
  @Override
  public void destroy() {
+ }
+
+ private String originFor(HttpServletRequest request) {
+  return StringUtils.hasText(request.getHeader(HttpHeaders.ORIGIN)) ? request
+   .getHeader(HttpHeaders.ORIGIN) : request.getHeader(HttpHeaders.REFERER);
  }
 }
