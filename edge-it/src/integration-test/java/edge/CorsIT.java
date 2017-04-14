@@ -22,7 +22,6 @@ import java.util.*;
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.parseMediaType;
 
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class CorsIT extends AbstractEdgeTest {

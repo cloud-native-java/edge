@@ -12,6 +12,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.RetryCallback;
+import org.springframework.retry.RetryContext;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -19,6 +22,8 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.URI;
 import java.nio.charset.Charset;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +32,8 @@ import java.util.Map;
 public class PasswordGrantIT extends AbstractEdgeTest {
 
  private Log log = LogFactory.getLog(getClass());
+
+ private final RetryTemplate retryTemplate = new RetryTemplate();
 
  private final RestTemplate restTemplate = new RestTemplate();
 
@@ -37,6 +44,7 @@ public class PasswordGrantIT extends AbstractEdgeTest {
 
  @Test
  public void testAuth() throws Throwable {
+
   ApplicationInstanceConfiguration callback = (appId) -> {
    String prop = "security.basic.enabled";
    this.cloudFoundryOperations
@@ -44,17 +52,14 @@ public class PasswordGrantIT extends AbstractEdgeTest {
     .unsetEnvironmentVariable(
      UnsetEnvironmentVariableApplicationRequest.builder().name(appId)
       .variableName(prop).build()).block();
-
    this.restart(appId);
   };
-  Map<String, String> env = new HashMap<>();
-  this.baselineDeploy(new String[] { "secure" }, env, callback, new String[] {
-   "secure", "sso" }, env, callback);
 
-  // todo we should be able to call the
-  // auth-service, get a token, then
-  // call the edge-service/api/user
-  // endpoint with that token
+  // TODO remove this !
+  this
+   .baselineDeploy(new String[] { "secure" }, Collections.emptyMap(), callback,
+    new String[] { "secure", "sso" }, Collections.emptyMap(), callback);
+
   String accessToken = this.obtainToken();
 
   String userEndpointOnEdgeService = this.service.urlForApplication(this
@@ -100,13 +105,13 @@ public class PasswordGrantIT extends AbstractEdgeTest {
 
   ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
   };
-  ResponseEntity<Map<String, String>> responseEntity = restTemplate.exchange(
-   requestEntity, type);
-  Map<String, String> body = responseEntity.getBody();
-
-  String accessToken = body.get("access_token");
+  String accessToken = this.retryTemplate.execute((ctx) -> {
+   ResponseEntity<Map<String, String>> responseEntity = this.restTemplate
+    .exchange(requestEntity, type);
+   Map<String, String> body = responseEntity.getBody();
+   return body.get("access_token");
+  });
   log.info("access_token: " + accessToken);
-
   return accessToken;
  }
 }

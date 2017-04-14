@@ -39,13 +39,14 @@ public abstract class AbstractEdgeTest {
   }
  }
 
- protected void deployAuthService() throws Throwable {
+ protected String deployAuthService() throws Throwable {
   String authService = this.appNameFromManifest(this.authServiceManifest);
   if (!this.service.applicationExists(authService)) {
    this.service
     .pushApplicationAndCreateUserDefinedServiceUsingManifest(this.authServiceManifest);
    this.log.info("deployed " + authService);
   }
+  return authService;
  }
 
  protected void setEnvironmentVariable(String appId, String k, String v) {
@@ -129,9 +130,7 @@ public abstract class AbstractEdgeTest {
   String greetingsServiceAppId = this
    .appNameFromManifest(this.greetingsServiceManifest);
 
-  if (delete) { // TODO NEVER delete for
-                // now we need the
-                // efficiencies!
+  if (delete) {
    Stream.of(html5AppId, edgeServiceAppId, greetingsServiceAppId, eurekaAppId,
     authServiceAppId).forEach(appId -> {
     this.service.destroyApplicationIfExists(appId);
@@ -150,28 +149,33 @@ public abstract class AbstractEdgeTest {
    .map(e -> e.getValue().getName()).findAny().orElse(null);
  }
 
- public   interface ApplicationInstanceConfiguration {
+ public interface ApplicationInstanceConfiguration {
 
   void configure(String appId);
  }
 
- protected void baselineDeploy(String[] gsProfiles, Map<String, String> gsEnv,
-  ApplicationInstanceConfiguration gsCallback, String[] esProfiles,
-  Map<String, String> esEnv, ApplicationInstanceConfiguration esCallback)
-  throws Throwable {
+ protected void baselineDeploy(
+
+  // greetings-service
+  String[] gsProfiles, Map<String, String> gsEnv,
+  ApplicationInstanceConfiguration gsCallback,
+
+  // edge-service
+  String[] esProfiles, Map<String, String> esEnv,
+  ApplicationInstanceConfiguration esCallback
+
+ ) throws Throwable {
 
   // eureka
-  String eurekaServiceId = deployEurekaService();
-  this.log.info("deployed " + eurekaServiceId);
-
+  String eurekaServiceId = this.deployEurekaService();
   // auth
-  this.deployAuthService();
-
-
+  String authServiceId = this.deployAuthService();
   // greetings
   String greetingsServiceId = this.deployGreetingsService();
-  if (null != gsCallback)
+  if (null != gsCallback) {
    gsCallback.configure(greetingsServiceId);
+  }
+
   this.reconfigureApplicationProfile(greetingsServiceId, gsProfiles);
   gsEnv
    .forEach((k, v) -> this.setEnvironmentVariable(greetingsServiceId, k, v));
