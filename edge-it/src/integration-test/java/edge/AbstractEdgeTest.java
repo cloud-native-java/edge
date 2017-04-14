@@ -129,7 +129,7 @@ public abstract class AbstractEdgeTest {
         String greetingsServiceAppId = this
                 .appNameFromManifest(this.greetingsServiceManifest);
 
-        if (false) { // TODO NEVER delete for now we need the efficiencies!
+        if ( delete ) { // TODO NEVER delete for now we need the efficiencies!
             Stream.of(html5AppId, edgeServiceAppId, greetingsServiceAppId, eurekaAppId,
                     authServiceAppId).forEach(
                     appId -> {

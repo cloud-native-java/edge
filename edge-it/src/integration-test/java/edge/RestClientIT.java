@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -16,11 +17,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 // todo setup a test that deploys greetings-service with zuul profile active to see requests logged.
-
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class RestClientIT extends AbstractEdgeTest {
-
 
     private RetryTemplate retryTemplate = new RetryTemplate();
 

@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -20,7 +21,7 @@ import java.util.*;
 
 import static org.springframework.http.HttpHeaders.*;
 import static org.springframework.http.MediaType.parseMediaType;
-
+@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class CorsIT extends AbstractEdgeTest {
