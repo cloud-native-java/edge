@@ -28,27 +28,22 @@ import static org.springframework.http.MediaType.parseMediaType;
 @SpringBootTest(classes = Config.class)
 public class CorsIT extends AbstractEdgeTest {
 
- private File html5Client;
 
- private Log log = LogFactory.getLog(getClass());
+    private Log log = LogFactory.getLog(getClass());
 
- private String edgeServiceAppId, html5AppId;
+    private String edgeServiceAppId;
 
- @Before
- public void before() throws Throwable {
-  this.defaultSetup(true);
-  this.html5Client = new File(root, "../html5-client/manifest.yml");
-  this.edgeServiceAppId = this.appNameFromManifest(this.edgeServiceManifest);
-  this.html5AppId = this.appNameFromManifest(this.html5Client);
- }
+    @Before
+    public void before() throws Throwable {
+        this.defaultSetup(true);
+        this.edgeServiceAppId = this.appNameFromManifest(this.edgeServiceManifest);
+    }
 
- @Test
- public void testCors() throws Throwable {
-  this.baselineDeploy("cors,insecure".split(","));
-  if (!this.service.applicationExists(html5AppId)) {
-   this.service.pushApplicationUsingManifest(this.html5Client);
-   this.log.info("deployed " + html5AppId);
-  }
+
+    @Test
+    public void testCors() throws Throwable {
+        this.baselineDeploy("cors,insecure".split(","));
+        deployHtml5Client();
 
   /*
    * we'll do a CORS preflight and
@@ -60,37 +55,38 @@ public class CorsIT extends AbstractEdgeTest {
    * only ask for a service that's been
    * registered in the registry
    */
-  String edgeServiceUri = service.urlForApplication(this.edgeServiceAppId)
-   + "/lets/greet/Phil";
-  String html5ClientUri = this.service.urlForApplication(this.html5AppId);
+        String edgeServiceUri = service.urlForApplication(this.edgeServiceAppId)
+                + "/lets/greet/Phil";
+        String html5ClientUri = this.service.urlForApplication(
+                this.appNameFromManifest(this.html5Client));
 
-  this.log.info("edge-service URI " + edgeServiceUri);
-  this.log.info("html5-client URI " + html5ClientUri);
+        this.log.info("edge-service URI " + edgeServiceUri);
+        this.log.info("html5-client URI " + html5ClientUri);
 
-  RestTemplate restTemplate = new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
 
-  List<String> headerList = Arrays.asList(ACCEPT, "X-Requested-With", ORIGIN);
-  String headersString = StringUtils.arrayToDelimitedString(
-   headerList.toArray(), ", ").trim();
+        List<String> headerList = Arrays.asList(ACCEPT, "X-Requested-With", ORIGIN);
+        String headersString = StringUtils.arrayToDelimitedString(
+                headerList.toArray(), ", ").trim();
 
-  RequestEntity<Void> requestEntity = RequestEntity
-   .options(URI.create(edgeServiceUri))
-   .header(ACCEPT, parseMediaType("*/*").toString())
-   .header(ACCESS_CONTROL_REQUEST_METHOD, HttpMethod.GET.toString())
-   .header(ACCESS_CONTROL_REQUEST_HEADERS, headersString)
-   .header(REFERER, html5ClientUri).header(ORIGIN, html5ClientUri).build();
+        RequestEntity<Void> requestEntity = RequestEntity
+                .options(URI.create(edgeServiceUri))
+                .header(ACCEPT, parseMediaType("*/*").toString())
+                .header(ACCESS_CONTROL_REQUEST_METHOD, HttpMethod.GET.toString())
+                .header(ACCESS_CONTROL_REQUEST_HEADERS, headersString)
+                .header(REFERER, html5ClientUri).header(ORIGIN, html5ClientUri).build();
 
-  Set<HttpMethod> httpMethods = restTemplate.optionsForAllow(edgeServiceUri);
-  httpMethods.forEach(m -> log.info(m));
+        Set<HttpMethod> httpMethods = restTemplate.optionsForAllow(edgeServiceUri);
+        httpMethods.forEach(m -> log.info(m));
 
-  ResponseEntity<Void> responseEntity = restTemplate.exchange(requestEntity,
-   Void.class);
-  HttpHeaders headers = responseEntity.getHeaders();
-  headers.forEach((k, v) -> log.info(k + '=' + v.toString()));
-  log.info("response received: " + responseEntity.toString());
-  Assert.assertTrue("our preflight response should contain a "
-   + ACCESS_CONTROL_ALLOW_ORIGIN,
-   headers.containsKey(ACCESS_CONTROL_ALLOW_ORIGIN));
- }
+        ResponseEntity<Void> responseEntity = restTemplate.exchange(requestEntity,
+                Void.class);
+        HttpHeaders headers = responseEntity.getHeaders();
+        headers.forEach((k, v) -> log.info(k + '=' + v.toString()));
+        log.info("response received: " + responseEntity.toString());
+        Assert.assertTrue("our preflight response should contain a "
+                        + ACCESS_CONTROL_ALLOW_ORIGIN,
+                headers.containsKey(ACCESS_CONTROL_ALLOW_ORIGIN));
+    }
 
 }
