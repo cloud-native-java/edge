@@ -13,6 +13,10 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
+
+// todo setup a test that deploys greetings-service with zuul profile active to see requests logged.
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class RestClientIT extends AbstractEdgeTest {
@@ -57,15 +61,20 @@ public class RestClientIT extends AbstractEdgeTest {
 
  @Test
  public void restClients() throws Throwable {
-  String[] ps = { "insecure" };
-  baselineDeploy(ps);
+  baselineDeploy(new String[] { "insecure" },
+   Collections.singletonMap("security.basic.enabled", "false"),
+   new String[] { "insecure" },
+   Collections.singletonMap("security.basic.enabled", "false"));
   testEdgeRestClient("Shafer", "/api/resttemplate/");
  }
 
  @Test
  public void testFeignClients() throws Throwable {
-  String[] ps = { "insecure", "feign" };
-  baselineDeploy(ps);
+
+  baselineDeploy(new String[] { "insecure" },
+   Collections.singletonMap("security.basic.enabled", "false"),
+   "insecure,feign".split(","),
+   Collections.singletonMap("security.basic.enabled", "false"));
   testEdgeRestClient("Watters", "/api/feign/");
  }
 }
