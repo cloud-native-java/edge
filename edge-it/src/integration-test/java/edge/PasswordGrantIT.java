@@ -6,13 +6,13 @@ import org.cloudfoundry.operations.applications.UnsetEnvironmentVariableApplicat
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Base64Utils;
@@ -30,18 +30,11 @@ public class PasswordGrantIT extends AbstractEdgeTest {
 
  private Log log = LogFactory.getLog(getClass());
 
- private final RetryTemplate retryTemplate = retryTemplate();
+ @Autowired
+ private RestTemplate restTemplate;
 
- private static RetryTemplate retryTemplate() {
-  RetryTemplate retryTemplate = new RetryTemplate();
-  ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-  backOffPolicy.setInitialInterval(30 * 1000);
-  backOffPolicy.setMaxInterval(90 * 1000);
-  retryTemplate.setBackOffPolicy(backOffPolicy);
-  return retryTemplate;
- }
-
- private final RestTemplate restTemplate = new RestTemplate();
+ @Autowired
+ private RetryTemplate retryTemplate;
 
  @Before
  public void before() throws Throwable {

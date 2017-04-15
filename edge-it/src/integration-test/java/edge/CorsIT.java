@@ -6,12 +6,12 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
@@ -26,6 +26,9 @@ import static org.springframework.http.MediaType.parseMediaType;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class CorsIT extends AbstractEdgeTest {
+
+ @Autowired
+ private RetryTemplate retryTemplate;
 
  private Log log = LogFactory.getLog(getClass());
 
@@ -79,8 +82,14 @@ public class CorsIT extends AbstractEdgeTest {
   Set<HttpMethod> httpMethods = restTemplate.optionsForAllow(edgeServiceUri);
   httpMethods.forEach(m -> log.info(m));
 
-  ResponseEntity<Void> responseEntity = this.retryTemplate
-   .execute(ctx -> restTemplate.exchange(requestEntity, Void.class));
+  ResponseEntity<Void> responseEntity = this.retryTemplate.execute(ctx -> {
+   ResponseEntity<Void> exchange = restTemplate.exchange(requestEntity,
+    Void.class);
+   if (!exchange.getHeaders().containsKey(ACCESS_CONTROL_ALLOW_ORIGIN))
+    throw new RuntimeException("there's no " + ACCESS_CONTROL_ALLOW_ORIGIN
+     + " header present.");
+   return exchange;
+  });
 
   HttpHeaders headers = responseEntity.getHeaders();
   headers.forEach((k, v) -> log.info(k + '=' + v.toString()));
@@ -89,17 +98,6 @@ public class CorsIT extends AbstractEdgeTest {
   Assert.assertTrue("our preflight response should contain a "
    + ACCESS_CONTROL_ALLOW_ORIGIN,
    headers.containsKey(ACCESS_CONTROL_ALLOW_ORIGIN));
- }
-
- private final RetryTemplate retryTemplate = retryTemplate();
-
- private static RetryTemplate retryTemplate() {
-  RetryTemplate retryTemplate = new RetryTemplate();
-  ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-  backOffPolicy.setInitialInterval(30 * 1000);
-  backOffPolicy.setMaxInterval(90 * 1000);
-  retryTemplate.setBackOffPolicy(backOffPolicy);
-  return retryTemplate;
  }
 
 }
