@@ -39,7 +39,7 @@ public abstract class AbstractEdgeTest {
 
     protected File root, authServiceManifest, eurekaManifest, edgeServiceManifest, greetingsServiceManifest, html5ClientManifest;
 
-    private static volatile boolean RESET = true;
+    private static volatile boolean RESET = false;
 
     private Log log = LogFactory.getLog(getClass());
 

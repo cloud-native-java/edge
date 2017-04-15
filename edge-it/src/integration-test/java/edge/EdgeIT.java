@@ -135,7 +135,6 @@ public class EdgeIT extends AbstractEdgeTest {
         String client = "html5";
 
         LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>() {
-
             {
                 this.add("client_secret", clientSecret);
                 this.add("client_id", client);
@@ -152,7 +151,6 @@ public class EdgeIT extends AbstractEdgeTest {
         RequestEntity<LinkedMultiValueMap<String, String>> requestEntity = RequestEntity
                 .post(uri).accept(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Basic " + token).body(map);
-
         ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
         };
         String accessToken = this.retryTemplate.execute((ctx) -> {
