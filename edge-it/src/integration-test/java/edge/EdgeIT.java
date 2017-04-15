@@ -88,33 +88,26 @@ public class EdgeIT extends AbstractEdgeTest {
                 "false");
         this.baselineDeploy(new String[]{"insecure"}, e, null,
                 "cors,insecure".split(","), e, null);
-        this.deployHtml5Client();
-
-        String edgeServiceUri = service.urlForApplication(appNameFromManifest(
+        this.deployAppIfDoesNotExist(this.html5ClientManifest);
+        String edgeServiceUri = this.service.urlForApplication(appNameFromManifest(
                 this.edgeServiceManifest))
                 + "/lets/greet/Phil";
         String html5ClientUri = this.service.urlForApplication(this
                 .appNameFromManifest(this.html5ClientManifest));
-
         this.log.info("edge-service URI " + edgeServiceUri);
         this.log.info("html5-client URI " + html5ClientUri);
-
         RestTemplate restTemplate = new RestTemplate();
-
         List<String> headerList = Arrays.asList(ACCEPT, "X-Requested-With", ORIGIN);
         String headersString = StringUtils.arrayToDelimitedString(
                 headerList.toArray(), ", ").trim();
-
         RequestEntity<Void> requestEntity = RequestEntity
                 .options(URI.create(edgeServiceUri))
                 .header(ACCEPT, parseMediaType("*/*").toString())
                 .header(ACCESS_CONTROL_REQUEST_METHOD, HttpMethod.GET.toString())
                 .header(ACCESS_CONTROL_REQUEST_HEADERS, headersString)
                 .header(REFERER, html5ClientUri).header(ORIGIN, html5ClientUri).build();
-
         Set<HttpMethod> httpMethods = restTemplate.optionsForAllow(edgeServiceUri);
         httpMethods.forEach(m -> log.info(m));
-
         ResponseEntity<Void> responseEntity = this.retryTemplate.execute(ctx -> {
             ResponseEntity<Void> exchange = restTemplate.exchange(requestEntity,
                     Void.class);
@@ -123,14 +116,11 @@ public class EdgeIT extends AbstractEdgeTest {
                         + " header present.");
             return exchange;
         });
-
         HttpHeaders headers = responseEntity.getHeaders();
         headers.forEach((k, v) -> log.info(k + '=' + v.toString()));
         log.info("response received: " + responseEntity.toString());
-
         Assert.assertTrue("preflight response should contain "
-                        + ACCESS_CONTROL_ALLOW_ORIGIN,
-                headers.containsKey(ACCESS_CONTROL_ALLOW_ORIGIN));
+                + ACCESS_CONTROL_ALLOW_ORIGIN, headers.containsKey(ACCESS_CONTROL_ALLOW_ORIGIN));
     }
 
     private String obtainToken() throws Exception {

@@ -39,15 +39,17 @@ public abstract class AbstractEdgeTest {
 
     protected File root, authServiceManifest, eurekaManifest, edgeServiceManifest, greetingsServiceManifest, html5ClientManifest;
 
+    private static volatile boolean RESET = true;
+
     private Log log = LogFactory.getLog(getClass());
 
-    protected void deployHtml5Client() throws Throwable {
-        String html5AppId = this.appNameFromManifest(this.html5ClientManifest);
-        if (!this.service.applicationExists(html5AppId)) {
-            this.service.pushApplicationUsingManifest(this.html5ClientManifest);
-            this.log.info("deployed " + html5AppId);
-        }
+    @Before
+    public void before() throws Throwable {
+        log.info("RESET=" + RESET);
+        baseline(RESET);
+        RESET = false;
     }
+
 
     protected void destroy() throws Throwable {
         log.info("destroy()");
@@ -75,7 +77,6 @@ public abstract class AbstractEdgeTest {
             }
         });
     }
-
 
     protected void setEnvironmentVariable(String appId, String k, String v) {
         log.info("set-env " + appId + " " + k + " " + v);
@@ -131,7 +132,7 @@ public abstract class AbstractEdgeTest {
         return appName;
     }
 
-    private String deployAppIfDoesNotExist(File manifest) {
+    protected String deployAppIfDoesNotExist(File manifest) {
         String appName = this.appNameFromManifest(manifest);
         this.log.info("deploying " + appName);
 
@@ -155,15 +156,6 @@ public abstract class AbstractEdgeTest {
 
         return appName;
     }
-
-    @Before
-    public void before() throws Throwable {
-        log.info("RESET=" + RESET);
-        baseline(RESET);
-        RESET = false;
-    }
-
-    private static volatile boolean RESET = true;
 
     public void baseline(boolean delete) throws Throwable {
         this.root = new File(".");
@@ -213,38 +205,20 @@ public abstract class AbstractEdgeTest {
 
         // eureka
 
-        String eurekaServiceId = this.deployAppAndServiceIfDoesNotExist(this.eurekaManifest);
+        this.deployAppAndServiceIfDoesNotExist(this.eurekaManifest);
+        this.deployAppAndServiceIfDoesNotExist(this.authServiceManifest);
+        deployAppWithSettings(this.greetingsServiceManifest, gsProfiles, gsEnv, gsCallback);
+        deployAppWithSettings(this.edgeServiceManifest, esProfiles, esEnv, esCallback);
+    }
 
-        String authServiceId = this.deployAppAndServiceIfDoesNotExist(this.authServiceManifest);
-
-        // greetings
-        String greetingsServiceId = this.deployAppIfDoesNotExist(this.greetingsServiceManifest);
-        if (null != gsCallback) {
-            gsCallback.configure(greetingsServiceId);
+    private void deployAppWithSettings(File ma, String[] profiles, Map<String, String> env, ApplicationInstanceConfiguration callback) {
+        String appId = this.deployAppIfDoesNotExist(ma);
+        if (null != callback) {
+            callback.configure(appId);
         }
-        this.reconfigureApplicationProfile(greetingsServiceId, gsProfiles);
-        gsEnv.forEach((k, v) -> this.setEnvironmentVariable(greetingsServiceId, k, v));
-        this.restart(greetingsServiceId);
-
-        // edge
-        String edgeServiceId = this.deployEdgeService();
-        if (null != esCallback)
-            esCallback.configure(edgeServiceId);
-        this.reconfigureApplicationProfile(edgeServiceId, esProfiles);
-        esEnv.forEach((k, v) -> this.setEnvironmentVariable(edgeServiceId, k, v));
-        this.restart(edgeServiceId);
+        this.reconfigureApplicationProfile(appId, profiles);
+        env.forEach((k, v) -> this.setEnvironmentVariable(appId, k, v));
+        this.restart(appId);
     }
 
-    protected String deployEdgeService() {
-        return this.service.applicationManifestFrom(this.edgeServiceManifest)
-                .entrySet().stream().map(e -> {
-                    File f = e.getKey();
-                    ApplicationManifest am = e.getValue();
-                    String appId = am.getName();
-                    if (!this.service.applicationExists(appId))
-                        this.service.pushApplicationUsingManifest(f, am, false);
-                    return appId;
-                }).findAny().orElse(null);
-
-    }
 }
