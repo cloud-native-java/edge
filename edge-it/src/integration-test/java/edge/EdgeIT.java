@@ -4,17 +4,13 @@ package edge;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudfoundry.operations.applications.UnsetEnvironmentVariableApplicationRequest;
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
 import org.springframework.retry.RetryCallback;
-import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
@@ -26,31 +22,13 @@ import java.nio.charset.Charset;
 import java.util.*;
 
 import static org.springframework.http.HttpHeaders.*;
-import static org.springframework.http.HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN;
 import static org.springframework.http.MediaType.parseMediaType;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class EdgeIT extends AbstractEdgeTest {
 
-    private static volatile boolean RESET = true;
-
-    private String edgeServiceAppId;
-
-    @Autowired
-    private RestTemplate restTemplate;
-
-    @Autowired
-    private RetryTemplate retryTemplate;
-
     private Log log = LogFactory.getLog(getClass());
-
-    @Before
-    public void before() throws Throwable {
-        this.baseline(RESET);
-        RESET = false;
-        this.edgeServiceAppId = this.appNameFromManifest(this.edgeServiceManifest);
-    }
 
     @Test
     public void restClients() throws Throwable {
@@ -103,7 +81,6 @@ public class EdgeIT extends AbstractEdgeTest {
         this.log.info("body from authorized request: " + body);
     }
 
-
     @Test
     public void testCors() throws Throwable {
         log.info("running testCors()");
@@ -113,7 +90,8 @@ public class EdgeIT extends AbstractEdgeTest {
                 "cors,insecure".split(","), e, null);
         this.deployHtml5Client();
 
-        String edgeServiceUri = service.urlForApplication(this.edgeServiceAppId)
+        String edgeServiceUri = service.urlForApplication(appNameFromManifest(
+                this.edgeServiceManifest))
                 + "/lets/greet/Phil";
         String html5ClientUri = this.service.urlForApplication(this
                 .appNameFromManifest(this.html5ClientManifest));
@@ -150,11 +128,10 @@ public class EdgeIT extends AbstractEdgeTest {
         headers.forEach((k, v) -> log.info(k + '=' + v.toString()));
         log.info("response received: " + responseEntity.toString());
 
-        Assert.assertTrue("our preflight response should contain a "
+        Assert.assertTrue("preflight response should contain "
                         + ACCESS_CONTROL_ALLOW_ORIGIN,
                 headers.containsKey(ACCESS_CONTROL_ALLOW_ORIGIN));
     }
-
 
     private String obtainToken() throws Exception {
 
