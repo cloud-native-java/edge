@@ -42,6 +42,7 @@ public abstract class AbstractEdgeTest {
     }
 
     protected void destroy() throws Throwable {
+        log.info("calling destroy()");
         String authServiceAppId = this.appNameFromManifest(this.authServiceManifest);
         String eurekaAppId = this.appNameFromManifest(this.eurekaManifest);
         String html5AppId = this.appNameFromManifest(this.html5ClientManifest);
@@ -50,14 +51,23 @@ public abstract class AbstractEdgeTest {
                 .appNameFromManifest(this.greetingsServiceManifest);
         Stream.of(html5AppId, edgeServiceAppId, greetingsServiceAppId, eurekaAppId,
                 authServiceAppId).forEach(appId -> {
-            this.service.destroyApplicationIfExists(appId);
-            this.log.info("deleted application " + appId);
+                    try {
+                        this.service.destroyApplicationIfExists(appId);
+                        this.log.info("deleted application " + appId);
+                    }
+                    catch (Throwable t) {
+                        // don't care
+                    }
         });
 
         Stream.of(eurekaAppId, authServiceAppId).forEach(svcId -> {
-            this.service.destroyServiceIfExists(svcId);
-            log.info("deleted service " + svcId);
-        });
+            try {
+                this.service.destroyServiceIfExists(svcId);
+                log.info("deleted service " + svcId);
+            } catch (Throwable t) {
+                // don't care
+            }
+            });
     }
 
     protected String deployAuthService() throws Throwable {
@@ -146,7 +156,7 @@ public abstract class AbstractEdgeTest {
 
 
         if (delete) {
-            destroy();
+            this.destroy();
         }
     }
 
