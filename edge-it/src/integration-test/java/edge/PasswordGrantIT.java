@@ -38,11 +38,13 @@ public class PasswordGrantIT extends AbstractEdgeTest {
 
  @Before
  public void before() throws Throwable {
-  this.defaultSetup(true);
+  this.baseline(true);
  }
 
  @Test
  public void testAuth() throws Throwable {
+
+  log.info("running testAuth()");
 
   ApplicationInstanceConfiguration callback = (appId) -> {
    String prop = "security.basic.enabled";

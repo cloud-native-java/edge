@@ -110,7 +110,7 @@ public abstract class AbstractEdgeTest {
    }).findAny().orElse(null);
  }
 
- protected void defaultSetup(boolean delete) throws Throwable {
+ protected void baseline(boolean delete) throws Throwable {
   this.root = new File(".");
   this.authServiceManifest = new File(root, "../auth-service/manifest.yml");
   this.eurekaManifest = new File(root, "../service-registry/manifest.yml");

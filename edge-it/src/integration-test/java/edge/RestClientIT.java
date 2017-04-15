@@ -4,7 +4,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,7 +28,7 @@ public class RestClientIT extends AbstractEdgeTest {
 
  @Before
  public void before() throws Throwable {
-  this.defaultSetup(true);
+  this.baseline(true);
  }
 
  private void testEdgeRestClient(String testName, String urlSuffix)
@@ -57,15 +56,16 @@ public class RestClientIT extends AbstractEdgeTest {
 
  @Test
  public void restClients() throws Throwable {
+
+  log.info("running restClients()");
+  // resttemplate
   baselineDeploy(new String[] { "insecure" },
    Collections.singletonMap("security.basic.enabled", "false"), null,
    new String[] { "insecure" },
    Collections.singletonMap("security.basic.enabled", "false"), null);
   testEdgeRestClient("Shafer", "/api/resttemplate/");
- }
 
- @Test
- public void testFeignClients() throws Throwable {
+  // feign
   baselineDeploy(new String[] { "insecure" },
    Collections.singletonMap("security.basic.enabled", "false"), null,
    "insecure,feign".split(","),

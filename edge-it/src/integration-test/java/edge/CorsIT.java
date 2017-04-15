@@ -36,12 +36,13 @@ public class CorsIT extends AbstractEdgeTest {
 
  @Before
  public void before() throws Throwable {
-  this.defaultSetup(true);
+  this.baseline(true);
   this.edgeServiceAppId = this.appNameFromManifest(this.edgeServiceManifest);
  }
 
  @Test
  public void testCors() throws Throwable {
+  log.info("running testCors()");
   Map<String, String> e = Collections.singletonMap("security.basic.enabled",
    "false");
   this.baselineDeploy(new String[] { "insecure" }, e, null,
