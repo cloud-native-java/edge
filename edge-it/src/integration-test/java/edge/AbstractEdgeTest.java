@@ -156,8 +156,6 @@ public abstract class AbstractEdgeTest {
   void configure(String appId);
  }
 
- // 3:23
-
  protected void baselineDeploy(
 
   // greetings-service
