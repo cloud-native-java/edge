@@ -11,6 +11,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.backoff.ExponentialBackOffPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
@@ -77,14 +79,27 @@ public class CorsIT extends AbstractEdgeTest {
   Set<HttpMethod> httpMethods = restTemplate.optionsForAllow(edgeServiceUri);
   httpMethods.forEach(m -> log.info(m));
 
-  ResponseEntity<Void> responseEntity = restTemplate.exchange(requestEntity,
-   Void.class);
+  ResponseEntity<Void> responseEntity = this.retryTemplate
+   .execute(ctx -> restTemplate.exchange(requestEntity, Void.class));
+
   HttpHeaders headers = responseEntity.getHeaders();
   headers.forEach((k, v) -> log.info(k + '=' + v.toString()));
   log.info("response received: " + responseEntity.toString());
+
   Assert.assertTrue("our preflight response should contain a "
    + ACCESS_CONTROL_ALLOW_ORIGIN,
    headers.containsKey(ACCESS_CONTROL_ALLOW_ORIGIN));
+ }
+
+ private final RetryTemplate retryTemplate = retryTemplate();
+
+ private static RetryTemplate retryTemplate() {
+  RetryTemplate retryTemplate = new RetryTemplate();
+  ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+  backOffPolicy.setInitialInterval(30 * 1000);
+  backOffPolicy.setMaxInterval(90 * 1000);
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+  return retryTemplate;
  }
 
 }

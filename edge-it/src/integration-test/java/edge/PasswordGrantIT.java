@@ -61,9 +61,8 @@ public class PasswordGrantIT extends AbstractEdgeTest {
    this.restart(appId);
   };
 
-  baselineDeploy(new String[] { "secure" }, new HashMap<>(),
-   callback, new String[] { "secure", "sso" }, new HashMap<>(),
-   callback);
+  baselineDeploy(new String[] { "secure" }, new HashMap<>(), callback,
+   new String[] { "secure", "sso" }, new HashMap<>(), callback);
 
   String accessToken = this.obtainToken();
 
