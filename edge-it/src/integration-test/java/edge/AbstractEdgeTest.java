@@ -158,6 +158,7 @@ public abstract class AbstractEdgeTest {
 
     @Before
     public void before() throws Throwable {
+        log.info("RESET=" + RESET);
         baseline(RESET);
         RESET = false;
     }
