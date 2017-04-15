@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.stream.Stream;
+
 @Ignore
 public abstract class AbstractEdgeTest {
 

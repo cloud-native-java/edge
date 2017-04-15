@@ -57,7 +57,6 @@ public class RestClientIT extends AbstractEdgeTest {
  }
 
  @Test
- @Ignore
  public void restClients() throws Throwable {
   baselineDeploy(new String[] { "insecure" },
    Collections.singletonMap("security.basic.enabled", "false"), null,
@@ -67,7 +66,6 @@ public class RestClientIT extends AbstractEdgeTest {
  }
 
  @Test
- @Ignore
  public void testFeignClients() throws Throwable {
 
   baselineDeploy(new String[] { "insecure" },

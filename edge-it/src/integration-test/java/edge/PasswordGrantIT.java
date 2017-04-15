@@ -1,132 +1,123 @@
 package edge;
 
-import cnj.CloudFoundryService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.cloudfoundry.operations.CloudFoundryOperations;
-import org.cloudfoundry.operations.applications.ApplicationManifest;
-import org.cloudfoundry.operations.applications.RestartApplicationRequest;
-import org.cloudfoundry.operations.applications.SetEnvironmentVariableApplicationRequest;
 import org.cloudfoundry.operations.applications.UnsetEnvironmentVariableApplicationRequest;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
-import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
-import org.springframework.retry.backoff.ThreadWaitSleeper;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.util.Base64Utils;
 import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
-import java.io.File;
 import java.net.URI;
 import java.nio.charset.Charset;
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.HashMap;
+import java.util.Map;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class PasswordGrantIT extends AbstractEdgeTest {
 
-    private Log log = LogFactory.getLog(getClass());
+ private Log log = LogFactory.getLog(getClass());
 
-    private final RetryTemplate retryTemplate = retryTemplate();
+ private final RetryTemplate retryTemplate = retryTemplate();
 
-    private static RetryTemplate retryTemplate() {
-        RetryTemplate retryTemplate = new RetryTemplate();
-        ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(30 * 1000);
-        backOffPolicy.setMaxInterval(90 * 1000);
-        retryTemplate.setBackOffPolicy(backOffPolicy);
-        return retryTemplate;
-    }
+ private static RetryTemplate retryTemplate() {
+  RetryTemplate retryTemplate = new RetryTemplate();
+  ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
+  backOffPolicy.setInitialInterval(30 * 1000);
+  backOffPolicy.setMaxInterval(90 * 1000);
+  retryTemplate.setBackOffPolicy(backOffPolicy);
+  return retryTemplate;
+ }
 
-    private final RestTemplate restTemplate = new RestTemplate();
+ private final RestTemplate restTemplate = new RestTemplate();
 
-    @Before
-    public void before() throws Throwable {
-        this.defaultSetup(true);
-    }
+ @Before
+ public void before() throws Throwable {
+  this.defaultSetup(true);
+ }
 
-    @Test
-    public void testAuth() throws Throwable {
+ @Test
+ public void testAuth() throws Throwable {
 
-        ApplicationInstanceConfiguration callback = (appId) -> {
-            String prop = "security.basic.enabled";
-            this.cloudFoundryOperations
-                    .applications()
-                    .unsetEnvironmentVariable(
-                            UnsetEnvironmentVariableApplicationRequest.builder().name(appId)
-                                    .variableName(prop).build()).block();
-            this.restart(appId);
-        };
+  ApplicationInstanceConfiguration callback = (appId) -> {
+   String prop = "security.basic.enabled";
+   this.cloudFoundryOperations
+    .applications()
+    .unsetEnvironmentVariable(
+     UnsetEnvironmentVariableApplicationRequest.builder().name(appId)
+      .variableName(prop).build()).block();
+   this.restart(appId);
+  };
 
-        baselineDeploy(new String[]{"secure"}, new HashMap<String, String>(), callback,
-                new String[]{"secure", "sso"}, new HashMap<String, String>(), callback);
+  baselineDeploy(new String[] { "secure" }, new HashMap<String, String>(),
+   callback, new String[] { "secure", "sso" }, new HashMap<String, String>(),
+   callback);
 
-        String accessToken = this.obtainToken();
+  String accessToken = this.obtainToken();
 
-        String userEndpointOnEdgeService = this.service.urlForApplication(this
-                .appNameFromManifest(this.greetingsServiceManifest)) + "/greet/OAuth";
-        // d259fbcd-56a8-49f7-9954-c969276219f1
-        RequestEntity<Void> requestEntity = RequestEntity
-                .<String>get(URI.create(userEndpointOnEdgeService))
-                .header(HttpHeaders.AUTHORIZATION, "bearer " + accessToken).build();
-        ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity,
-                String.class);
-        String body = responseEntity.getBody();
-        this.log.info("body from authorized request: " + body);
-    }
+  String userEndpointOnEdgeService = this.service.urlForApplication(this
+   .appNameFromManifest(this.greetingsServiceManifest)) + "/greet/OAuth";
 
-    private String obtainToken() throws Exception {
+  RequestEntity<Void> requestEntity = RequestEntity
+   .<String>get(URI.create(userEndpointOnEdgeService))
+   .header(HttpHeaders.AUTHORIZATION, "bearer " + accessToken).build();
+  ResponseEntity<String> responseEntity = restTemplate.exchange(requestEntity,
+   String.class);
+  String body = responseEntity.getBody();
+  this.log.info("body from authorized request: " + body);
+ }
 
-        String authServiceAppId = this.appNameFromManifest(this.authServiceManifest);
+ private String obtainToken() throws Exception {
 
-        URI uri = URI.create(this.service.urlForApplication(authServiceAppId) + "/uaa/oauth/token");
-        String username = "jlong";
-        String password = "spring";
-        String clientSecret = "password";
-        String client = "html5";
+  String authServiceAppId = this.appNameFromManifest(this.authServiceManifest);
 
-        LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>() {
-            {
-                this.add("client_secret", clientSecret);
-                this.add("client_id", client);
-                this.add("scope", "openid");
-                this.add("grant_type", "password");
-                this.add("username", username);
-                this.add("password", password);
-            }
-        };
+  URI uri = URI.create(this.service.urlForApplication(authServiceAppId)
+   + "/uaa/oauth/token");
+  String username = "jlong";
+  String password = "spring";
+  String clientSecret = "password";
+  String client = "html5";
 
-        String token = Base64Utils.encodeToString((client + ":" + clientSecret)
-                .getBytes(Charset.forName("UTF-8")));
+  LinkedMultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>() {
 
-        RequestEntity<LinkedMultiValueMap<String, String>> requestEntity = RequestEntity
-                .post(uri).accept(MediaType.APPLICATION_JSON)
-                .header("Authorization", "Basic " + token).body(map);
+   {
+    this.add("client_secret", clientSecret);
+    this.add("client_id", client);
+    this.add("scope", "openid");
+    this.add("grant_type", "password");
+    this.add("username", username);
+    this.add("password", password);
+   }
+  };
 
-        ParameterizedTypeReference<Map<String, String>> type =
-                new ParameterizedTypeReference<Map<String, String>>() {
-                };
-        String accessToken = this.retryTemplate.execute((ctx) -> {
-            ResponseEntity<Map<String, String>> responseEntity = this.restTemplate
-                    .exchange(requestEntity, type);
-            Map<String, String> body = responseEntity.getBody();
-            return body.get("access_token");
-        });
-        log.info("access_token: " + accessToken);
-        return accessToken;
-    }
+  String token = Base64Utils.encodeToString((client + ":" + clientSecret)
+   .getBytes(Charset.forName("UTF-8")));
+
+  RequestEntity<LinkedMultiValueMap<String, String>> requestEntity = RequestEntity
+   .post(uri).accept(MediaType.APPLICATION_JSON)
+   .header("Authorization", "Basic " + token).body(map);
+
+  ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
+  };
+  String accessToken = this.retryTemplate.execute((ctx) -> {
+   ResponseEntity<Map<String, String>> responseEntity = this.restTemplate
+    .exchange(requestEntity, type);
+   Map<String, String> body = responseEntity.getBody();
+   return body.get("access_token");
+  });
+  log.info("access_token: " + accessToken);
+  return accessToken;
+ }
 }
