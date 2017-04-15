@@ -163,7 +163,7 @@ public abstract class AbstractEdgeTest {
         RESET = false;
     }
 
-    private volatile boolean RESET = true;
+    private static volatile boolean RESET = true;
 
     public void baseline(boolean delete) throws Throwable {
         this.root = new File(".");
