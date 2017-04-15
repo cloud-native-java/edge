@@ -3,6 +3,7 @@ package edge;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.cloudfoundry.operations.applications.UnsetEnvironmentVariableApplicationRequest;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,10 @@ public class PasswordGrantIT extends AbstractEdgeTest {
   this.baseline(true);
  }
 
+ @After
+ public void after () throws Throwable {
+  this.destroy();
+ }
  @Test
  public void testAuth() throws Throwable {
 

@@ -2,6 +2,7 @@ package edge;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +30,11 @@ public class RestClientIT extends AbstractEdgeTest {
  @Before
  public void before() throws Throwable {
   this.baseline(true);
+ }
+
+ @After
+ public void after () throws Throwable {
+  this.destroy();
  }
 
  private void testEdgeRestClient(String testName, String urlSuffix)
