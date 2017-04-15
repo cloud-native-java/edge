@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import java.util.Collections;
 
 // todo setup a test that deploys greetings-service with zuul profile active to see requests logged.
-@Ignore
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Config.class)
 public class RestClientIT extends AbstractEdgeTest {
@@ -67,7 +66,6 @@ public class RestClientIT extends AbstractEdgeTest {
 
  @Test
  public void testFeignClients() throws Throwable {
-
   baselineDeploy(new String[] { "insecure" },
    Collections.singletonMap("security.basic.enabled", "false"), null,
    "insecure,feign".split(","),
