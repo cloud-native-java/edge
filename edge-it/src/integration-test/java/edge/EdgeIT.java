@@ -47,7 +47,7 @@ public class EdgeIT {
  private CloudFoundryOperations cloudFoundryOperations;
 
  @Autowired
- private CloudFoundryService service;
+ private CloudFoundryService cloudFoundryService;
 
  private File root, authServiceManifest, eurekaManifest, edgeServiceManifest,
   greetingsServiceManifest, html5ClientManifest;
@@ -104,7 +104,7 @@ public class EdgeIT {
 
   String accessToken = this.obtainToken();
 
-  String userEndpointOnEdgeService = this.service.urlForApplication(this
+  String userEndpointOnEdgeService = this.cloudFoundryService.urlForApplication(this
    .appNameFromManifest(this.greetingsServiceManifest)) + "/greet/OAuth";
 
   RequestEntity<Void> requestEntity = RequestEntity
@@ -123,12 +123,12 @@ public class EdgeIT {
    "false");
   this.baselineDeploy(new String[] { "insecure" }, e, null,
    "cors,insecure".split(","), e, null);
-  String edgeServiceUri = this.service
+  String edgeServiceUri = this.cloudFoundryService
    .urlForApplication(appNameFromManifest(this.edgeServiceManifest))
    + "/lets/greet/Phil";
-  String html5ClientUri = this.service.urlForApplication(this
+  String html5ClientUri = this.cloudFoundryService.urlForApplication(this
    .appNameFromManifest(this.html5ClientManifest));
-  this.log.info("edge-service URI " + edgeServiceUri);
+  this.log.info("edge-cloudFoundryService URI " + edgeServiceUri);
   this.log.info("html5-client URI " + html5ClientUri);
   List<String> headerList = Arrays.asList(ACCEPT, "X-Requested-With", ORIGIN);
   String headersString = StringUtils.arrayToDelimitedString(
@@ -163,7 +163,7 @@ public class EdgeIT {
 
   String authServiceAppId = this.appNameFromManifest(this.authServiceManifest);
 
-  URI uri = URI.create(this.service.urlForApplication(authServiceAppId)
+  URI uri = URI.create(this.cloudFoundryService.urlForApplication(authServiceAppId)
    + "/uaa/oauth/token");
   String username = "jlong";
   String password = "spring";
@@ -202,7 +202,7 @@ public class EdgeIT {
 
  private void testEdgeRestClient(String testName, String urlSuffix)
   throws Throwable {
-  String root = this.service
+  String root = this.cloudFoundryService
    .urlForApplication(appNameFromManifest(this.edgeServiceManifest));
   String edgeServiceUrl = root + urlSuffix + testName;
   String healthUrl = root + "/health";
@@ -214,7 +214,7 @@ public class EdgeIT {
     ResponseEntity<String> response = restTemplate.getForEntity(edgeServiceUrl,
      String.class);
     if (!response.getStatusCode().is2xxSuccessful()) {
-     String msg = "couldn't get a valid response calling the edge service ";
+     String msg = "couldn't get a valid response calling the edge cloudFoundryService ";
      this.log.info(msg);
      throw new RuntimeException(msg + edgeServiceUrl);
     }
@@ -234,7 +234,7 @@ public class EdgeIT {
   Stream.of(html5AppId, edgeServiceAppId, greetingsServiceAppId, eurekaAppId,
    authServiceAppId).forEach(appId -> {
    try {
-    this.service.destroyApplicationIfExists(appId);
+    this.cloudFoundryService.destroyApplicationIfExists(appId);
     this.log.info("attempted to delete application " + appId);
    }
    catch (Throwable t) {
@@ -244,8 +244,8 @@ public class EdgeIT {
 
   Stream.of(eurekaAppId, authServiceAppId).forEach(svcId -> {
    try {
-    this.service.destroyServiceIfExists(svcId);
-    log.info("attempted to delete service " + svcId);
+    this.cloudFoundryService.destroyServiceIfExists(svcId);
+    log.info("attempted to delete cloudFoundryService " + svcId);
    }
    catch (Throwable t) {
     // don't care
@@ -288,14 +288,14 @@ public class EdgeIT {
 
   String appName = this.appNameFromManifest(manifest);
   this.log.info("deploying " + appName);
-  this.service
+  this.cloudFoundryService
    .applicationManifestFrom(manifest)
    .entrySet()
    .stream()
    .map(e -> {
-    if (!service.applicationExists(appName)) {
-     // service.destroyServiceIfExists(appId);
-    service.pushApplicationAndCreateUserDefinedServiceUsingManifest(e.getKey(),
+    if (!cloudFoundryService.applicationExists(appName)) {
+     // cloudFoundryService.destroyServiceIfExists(appId);
+    cloudFoundryService.pushApplicationAndCreateUserDefinedServiceUsingManifest(e.getKey(),
      e.getValue());
     this.log.info("deployed " + appName + ".");
    }
@@ -307,12 +307,12 @@ public class EdgeIT {
   String appName = this.appNameFromManifest(manifest);
   this.log.info("deploying " + appName);
 
-  this.service.applicationManifestFrom(manifest).entrySet().stream().map(e -> {
+  this.cloudFoundryService.applicationManifestFrom(manifest).entrySet().stream().map(e -> {
    File f = e.getKey();
    ApplicationManifest am = e.getValue();
    String appId = am.getName();
-   if (!this.service.applicationExists(appId)) {
-    this.service.pushApplicationUsingManifest(f, am, false);
+   if (!this.cloudFoundryService.applicationExists(appId)) {
+    this.cloudFoundryService.pushApplicationUsingManifest(f, am, false);
     this.log.info("deployed " + appName + ".");
    }
    return appId;
@@ -323,11 +323,11 @@ public class EdgeIT {
 
  private void baseline(boolean delete) throws Throwable {
   this.root = new File(".");
-  this.authServiceManifest = new File(root, "../auth-service/manifest.yml");
-  this.eurekaManifest = new File(root, "../service-registry/manifest.yml");
-  this.edgeServiceManifest = new File(root, "../edge-service/manifest.yml");
+  this.authServiceManifest = new File(root, "../auth-cloudFoundryService/manifest.yml");
+  this.eurekaManifest = new File(root, "../cloudFoundryService-registry/manifest.yml");
+  this.edgeServiceManifest = new File(root, "../edge-cloudFoundryService/manifest.yml");
   this.greetingsServiceManifest = new File(root,
-   "../greetings-service/manifest.yml");
+   "../greetings-cloudFoundryService/manifest.yml");
   this.html5ClientManifest = new File(root, "../html5-client/manifest.yml");
 
   Assert.assertTrue(this.authServiceManifest.exists());
@@ -342,7 +342,7 @@ public class EdgeIT {
  }
 
  private String appNameFromManifest(File a) {
-  return this.service.applicationManifestFrom(a).entrySet().stream()
+  return this.cloudFoundryService.applicationManifestFrom(a).entrySet().stream()
    .map(e -> e.getValue().getName()).findAny().orElse(null);
  }
 
@@ -353,23 +353,31 @@ public class EdgeIT {
 
  private void baselineDeploy(
 
-  // greetings-service
-  String[] gsProfiles, Map<String, String> gsEnv,
-  ApplicationInstanceConfiguration gsCallback,
+            // greetings-cloudFoundryService
+            String[] gsProfiles, Map<String, String> gsEnv,
+            ApplicationInstanceConfiguration gsCallback,
 
-  // edge-service
-  String[] esProfiles, Map<String, String> esEnv,
-  ApplicationInstanceConfiguration esCallback
+            // edge-cloudFoundryService
+            String[] esProfiles, Map<String, String> esEnv,
+            ApplicationInstanceConfiguration esCallback
 
- ) throws Throwable {
-  this.deployAppAndServiceIfDoesNotExist(this.eurekaManifest);
-  this.deployAppAndServiceIfDoesNotExist(this.authServiceManifest);
-  this.deployAppWithSettings(this.greetingsServiceManifest, gsProfiles, gsEnv,
-   gsCallback);
-  this.deployAppWithSettings(this.edgeServiceManifest, esProfiles, esEnv,
-   esCallback);
-  this.deployAppIfDoesNotExist(this.html5ClientManifest);
+    ) throws Throwable {
 
+        // backing services
+        this.deployBackingServices();
+
+        this.deployAppAndServiceIfDoesNotExist(this.eurekaManifest);
+        this.deployAppAndServiceIfDoesNotExist(this.authServiceManifest);
+        this.deployAppWithSettings(this.greetingsServiceManifest, gsProfiles, gsEnv,
+                gsCallback);
+        this.deployAppWithSettings(this.edgeServiceManifest, esProfiles, esEnv,
+                esCallback);
+        this.deployAppIfDoesNotExist(this.html5ClientManifest);
+
+    }
+
+ private void deployBackingServices() {
+  cloudFoundryService.createServiceIfMissing("elephantsql", "turtle", "auth-cloudFoundryService-pgsql");
  }
 
  private void deployAppWithSettings(File ma, String[] profiles,
