@@ -84,7 +84,7 @@ public class EdgeIT {
   testEdgeRestClient("Watters", "/api/feign/");
  }
 
- @Test
+ //@Test
  public void testAuth() throws Throwable {
 
   log.info("running testAuth()");
