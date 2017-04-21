@@ -65,7 +65,7 @@ public class EdgeIT {
   RESET = false;
  }
 
-// @Test
+ @Test
  public void restClients() throws Throwable {
 
   log.info("running restClients()");
@@ -84,7 +84,7 @@ public class EdgeIT {
   testEdgeRestClient("Watters", "/api/feign/");
  }
 
- //@Test
+ @Test
  public void testAuth() throws Throwable {
 
   log.info("running testAuth()");
@@ -353,28 +353,28 @@ public class EdgeIT {
 
  private void baselineDeploy(
 
-            // greetings-service
-            String[] gsProfiles, Map<String, String> gsEnv,
-            ApplicationInstanceConfiguration gsCallback,
+  // greetings-service
+  String[] gsProfiles, Map<String, String> gsEnv,
+  ApplicationInstanceConfiguration gsCallback,
 
-            // edge-service
-            String[] esProfiles, Map<String, String> esEnv,
-            ApplicationInstanceConfiguration esCallback
+  // edge-service
+  String[] esProfiles, Map<String, String> esEnv,
+  ApplicationInstanceConfiguration esCallback
 
-    ) throws Throwable {
+ ) throws Throwable {
 
-        // backing services
-        this.deployBackingServices();
+  // backing services
+  this.deployBackingServices();
 
-        this.deployAppAndServiceIfDoesNotExist(this.eurekaManifest);
-        this.deployAppAndServiceIfDoesNotExist(this.authServiceManifest);
-        this.deployAppWithSettings(this.greetingsServiceManifest, gsProfiles, gsEnv,
-                gsCallback);
-        this.deployAppWithSettings(this.edgeServiceManifest, esProfiles, esEnv,
-                esCallback);
-        this.deployAppIfDoesNotExist(this.html5ClientManifest);
+  this.deployAppAndServiceIfDoesNotExist(this.eurekaManifest);
+  this.deployAppAndServiceIfDoesNotExist(this.authServiceManifest);
+  this.deployAppWithSettings(this.greetingsServiceManifest, gsProfiles, gsEnv,
+   gsCallback);
+  this.deployAppWithSettings(this.edgeServiceManifest, esProfiles, esEnv,
+   esCallback);
+  this.deployAppIfDoesNotExist(this.html5ClientManifest);
 
-    }
+ }
 
  private void deployBackingServices() {
   service.createServiceIfMissing("elephantsql", "turtle", "auth-service-pgsql");

@@ -68,12 +68,15 @@ class CorsFilter implements Filter {
    int port = originUri.getPort();
    String match = originUri.getHost() + ':' + (port <= 0 ? 80 : port);
 
-   log.info("incoming request: "+ origin);
+   log.info("incoming request: " + origin);
    log.info("------------------");
    this.catalog.forEach((k, v) -> {
-    String collect = v.stream().map(si -> si.getHost() + ':' + si.getPort() + '(' + si.getServiceId() + ')')
-            .collect(Collectors.joining());
-    log.info( "checking " +k + " against possible matches: " + collect );
+    String collect = v
+     .stream()
+     .map(
+      si -> si.getHost() + ':' + si.getPort() + '(' + si.getServiceId() + ')')
+     .collect(Collectors.joining());
+    log.info("checking " + k + " against possible matches: " + collect);
    });
 
    boolean svcMatch = this.catalog
