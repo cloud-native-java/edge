@@ -65,7 +65,7 @@ public class EdgeIT {
   RESET = false;
  }
 
- @Test
+// @Test
  public void restClients() throws Throwable {
 
   log.info("running restClients()");
