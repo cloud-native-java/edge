@@ -1,18 +1,23 @@
+
 package relay;
 
 import feign.RequestInterceptor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.DefaultUserInfoRestTemplateFactory;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.UserInfoRestTemplateFactory;
 import org.springframework.cloud.client.loadbalancer.LoadBalanced;
+import org.springframework.cloud.security.oauth2.client.feign.OAuth2FeignRequestInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpHeaders;
 import org.springframework.security.oauth2.client.OAuth2ClientContext;
 import org.springframework.security.oauth2.client.OAuth2RestTemplate;
 import org.springframework.security.oauth2.client.filter.OAuth2ClientContextFilter;
+import org.springframework.security.oauth2.client.resource.OAuth2ProtectedResourceDetails;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.web.client.RestTemplate;
 
@@ -20,6 +25,9 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnWebApplication
 @ConditionalOnClass(EnableResourceServer.class)
 public class TokenRelayAutoConfiguration {
+
+ // todo try renaming the beans?
+ // todo disable the feign interceptor?
 
  public static final String SECURE_PROFILE = "secure";
 
@@ -30,7 +38,7 @@ public class TokenRelayAutoConfiguration {
   // <1>
   @Bean
   @LoadBalanced
-  RestTemplate restTemplate() {
+  RestTemplate simpleRestTemplate() {
    return new RestTemplate();
   }
  }
@@ -41,8 +49,9 @@ public class TokenRelayAutoConfiguration {
 
   // <2>
   @Bean
+  @Lazy
   @LoadBalanced
-  OAuth2RestTemplate restTemplate(UserInfoRestTemplateFactory factory) {
+  OAuth2RestTemplate anOAuth2RestTemplate( UserInfoRestTemplateFactory factory) {
    return factory.getUserInfoRestTemplate();
   }
  }
@@ -55,10 +64,11 @@ public class TokenRelayAutoConfiguration {
 
   // <3>
   @Bean
-  RequestInterceptor requestInterceptor(OAuth2ClientContext clientContext) {
-   return requestTemplate -> requestTemplate.header(HttpHeaders.AUTHORIZATION,
+  RequestInterceptor requestInterceptor(OAuth2ClientContext clientContext ) {
+  return requestTemplate -> requestTemplate.header(HttpHeaders.AUTHORIZATION,
     clientContext.getAccessToken().getTokenType() + ' '
      + clientContext.getAccessToken().getValue());
+ //  return new OAuth2FeignRequestInterceptor(clientContext,  details);
   }
  }
 }

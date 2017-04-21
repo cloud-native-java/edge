@@ -2,6 +2,7 @@
 applications:
 - name: edge-service
   host: edge-service-${random-word}
+  timeout: 180
   buildpack: https://github.com/cloudfoundry/java-buildpack.git
   path: target/edge-service.jar
   services:

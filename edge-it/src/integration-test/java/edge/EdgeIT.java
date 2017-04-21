@@ -97,7 +97,7 @@ public class EdgeIT {
     .unsetEnvironmentVariable(
      UnsetEnvironmentVariableApplicationRequest.builder().name(appId)
       .variableName(prop).build()).block();
-   this.restart(appId);
+//   this.restart(appId);
   };
 
   baselineDeploy(new String[] { "secure" }, new HashMap<>(), callback,
