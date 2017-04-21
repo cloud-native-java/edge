@@ -66,6 +66,7 @@ public class EdgeIT {
  }
 
 // @Test
+ // this should work.. not 100% after the version revs.
  public void restClients() throws Throwable {
 
   log.info("running restClients()");
@@ -117,6 +118,7 @@ public class EdgeIT {
  }
 
 // @Test
+ // TODo this one worked before
  public void testCors() throws Throwable {
   log.info("running testCors()");
   Map<String, String> e = Collections.singletonMap("security.basic.enabled",
