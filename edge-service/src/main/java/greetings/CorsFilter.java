@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Profile("cors")
 @Component
@@ -66,6 +67,15 @@ class CorsFilter implements Filter {
    URI originUri = URI.create(origin);
    int port = originUri.getPort();
    String match = originUri.getHost() + ':' + (port <= 0 ? 80 : port);
+
+   log.info("incoming request: "+ origin);
+   log.info("------------------");
+   this.catalog.forEach((k, v) -> {
+    String collect = v.stream().map(si -> si.getHost() + ':' + si.getPort() + '(' + si.getServiceId() + ')')
+            .collect(Collectors.joining());
+    log.info(k + " : " + collect );
+   });
+
    boolean svcMatch = this.catalog
     .keySet()
     .stream()
