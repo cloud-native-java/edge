@@ -73,7 +73,7 @@ class CorsFilter implements Filter {
    this.catalog.forEach((k, v) -> {
     String collect = v.stream().map(si -> si.getHost() + ':' + si.getPort() + '(' + si.getServiceId() + ')')
             .collect(Collectors.joining());
-    log.info(k + " : " + collect );
+    log.info( "checking " +k + " against possible matches: " + collect );
    });
 
    boolean svcMatch = this.catalog
