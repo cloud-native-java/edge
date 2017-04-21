@@ -312,7 +312,7 @@ public class EdgeIT {
    ApplicationManifest am = e.getValue();
    String appId = am.getName();
    if (!this.service.applicationExists(appId)) {
-    this.service.pushApplicationUsingManifest(f, am, false);
+    this.service.pushApplicationUsingManifest(f, am, true);
     this.log.info("deployed " + appName + ".");
    }
    return appId;
