@@ -65,7 +65,7 @@ public class EdgeIT {
   RESET = false;
  }
 
-// @Test
+ @Test
  // this should work.. not 100% after the version revs.
  public void restClients() throws Throwable {
 
@@ -97,7 +97,6 @@ public class EdgeIT {
     .unsetEnvironmentVariable(
      UnsetEnvironmentVariableApplicationRequest.builder().name(appId)
       .variableName(prop).build()).block();
-//   this.restart(appId);
   };
 
   baselineDeploy(new String[] { "secure" }, new HashMap<>(), callback,
@@ -117,8 +116,7 @@ public class EdgeIT {
   this.log.info("body from authorized request: " + body);
  }
 
-// @Test
- // TODo this one worked before
+ @Test
  public void testCors() throws Throwable {
   log.info("running testCors()");
   Map<String, String> e = Collections.singletonMap("security.basic.enabled",
