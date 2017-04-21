@@ -65,7 +65,7 @@ public class EdgeIT {
   RESET = false;
  }
 
- @Test
+// @Test
  public void restClients() throws Throwable {
 
   log.info("running restClients()");
@@ -116,7 +116,7 @@ public class EdgeIT {
   this.log.info("body from authorized request: " + body);
  }
 
- @Test
+// @Test
  public void testCors() throws Throwable {
   log.info("running testCors()");
   Map<String, String> e = Collections.singletonMap("security.basic.enabled",
