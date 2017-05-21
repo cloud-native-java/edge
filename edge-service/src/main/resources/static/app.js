@@ -7,7 +7,6 @@ app.factory('oauth', function () {
 
 app.run(['$http', '$rootScope', 'oauth', function ($http, $rootScope, oauth) {
 
-    // <1>
     $http.get("/user").success(function (data) {
 
         oauth.details = data.userAuthentication.details;
