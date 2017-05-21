@@ -52,7 +52,6 @@ class CorsFilter implements Filter {
   String originHeaderValue = originFor(request);
   boolean clientAllowed = isClientAllowed(originHeaderValue);
 
-  // <3>
   if (clientAllowed) {
    response.setHeader(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
     originHeaderValue);
@@ -68,16 +67,13 @@ class CorsFilter implements Filter {
    int port = originUri.getPort();
    String match = originUri.getHost() + ':' + (port <= 0 ? 80 : port);
 
-   log.info("incoming request: " + origin);
-   log.info("------------------");
    this.catalog.forEach((k, v) -> {
     String collect = v
      .stream()
      .map(
       si -> si.getHost() + ':' + si.getPort() + '(' + si.getServiceId() + ')')
      .collect(Collectors.joining());
-    log.info("checking " + k + " against possible matches: " + collect);
-   });
+  });
 
    boolean svcMatch = this.catalog
     .keySet()
@@ -86,13 +82,8 @@ class CorsFilter implements Filter {
      serviceId -> this.catalog.get(serviceId).stream()
       .map(si -> si.getHost() + ':' + si.getPort())
       .anyMatch(hp -> hp.equalsIgnoreCase(match)));
-   this.log.info("does the request for " + origin
-    + "match anything in the DB using the following match condition (" + match
-    + ")? " + svcMatch);
    return svcMatch;
   }
-  log.info("returning false for isClientAllowed(" + origin + ")");
-
   return false;
  }
 

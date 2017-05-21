@@ -26,9 +26,6 @@ import org.springframework.web.client.RestTemplate;
 @ConditionalOnClass(EnableResourceServer.class)
 public class TokenRelayAutoConfiguration {
 
- // todo try renaming the beans?
- // todo disable the feign interceptor?
-
  public static final String SECURE_PROFILE = "secure";
 
  @Configuration
@@ -68,7 +65,6 @@ public class TokenRelayAutoConfiguration {
   return requestTemplate -> requestTemplate.header(HttpHeaders.AUTHORIZATION,
     clientContext.getAccessToken().getTokenType() + ' '
      + clientContext.getAccessToken().getValue());
- //  return new OAuth2FeignRequestInterceptor(clientContext,  details);
   }
  }
 }
