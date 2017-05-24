@@ -32,7 +32,10 @@ public class Html5Client {
  }
 
  // <1>
- @GetMapping(value = "/greetings-client-uri", produces = MediaType.APPLICATION_JSON_VALUE)
+ //@formatter:off
+ @GetMapping(value = "/greetings-client-uri",
+         produces = MediaType.APPLICATION_JSON_VALUE)
+ //@formatter:on
  Map<String, String> greetingsClientURI() throws Exception {
   return Optional
    .ofNullable(this.loadBalancerClient.choose("greetings-client"))

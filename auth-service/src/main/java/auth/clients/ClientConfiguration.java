@@ -41,7 +41,8 @@ public class ClientConfiguration {
      details.setClientSecret(client.getSecret());
 
      // <1>
-     // details.setAutoApproveScopes(Arrays.asList(client.getAutoApproveScopes().split(",")));
+     // details.setAutoApproveScopes
+     //    (Arrays.asList(client.getAutoApproveScopes().split(",")));
 
      // <2>
      String greetingsClientRedirectUri = Optional

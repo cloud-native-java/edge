@@ -26,8 +26,10 @@ class RestTemplateGreetingsClientApiGateway {
  @GetMapping("/resttemplate/{name}")
  Map<String, String> restTemplate(@PathVariable String name) {
 
-  ParameterizedTypeReference<Map<String, String>> type = new ParameterizedTypeReference<Map<String, String>>() {
-  };
+  //@formatter:off
+  ParameterizedTypeReference<Map<String, String>> type =
+      new ParameterizedTypeReference<Map<String, String>>() {};
+  //@formatter:on
 
   ResponseEntity<Map<String, String>> responseEntity = this.restTemplate
    .exchange("http://greetings-service/greet/{name}", HttpMethod.GET, null,
