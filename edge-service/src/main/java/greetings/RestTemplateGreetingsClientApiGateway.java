@@ -19,7 +19,8 @@ class RestTemplateGreetingsClientApiGateway {
  private final RestTemplate restTemplate;
 
  @Autowired
- RestTemplateGreetingsClientApiGateway(@LoadBalanced RestTemplate restTemplate) { // <1>
+ RestTemplateGreetingsClientApiGateway(
+   @LoadBalanced RestTemplate restTemplate) { // <1>
   this.restTemplate = restTemplate;
  }
 
