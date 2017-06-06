@@ -27,8 +27,8 @@ class SsoConfiguration extends WebSecurityConfigurerAdapter {
         http.antMatcher("/**").authorizeRequests() // <3>
                 .antMatchers( "/", "/app.js", "/login**", "/webjars/**
                 	").permitAll().anyRequest()
-                .authenticated().and().logout().logoutSuccessUrl("/")
-                	.permitAll().and().csrf()
+                .authenticated().and().logout().logoutSuccessUrl("/").permitAll()
+                    .and().csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     // @formatter:on
  }
