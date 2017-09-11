@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface ClientRepository extends JpaRepository<Client, Long> {
 
- Optional<Client> findByClientId(String clientId); <1>
+ Optional<Client> findByClientId(String clientId); // <1>
 }
