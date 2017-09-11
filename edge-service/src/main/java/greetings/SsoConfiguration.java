@@ -25,10 +25,8 @@ class SsoConfiguration extends WebSecurityConfigurerAdapter {
  protected void configure(HttpSecurity http) throws Exception {
   // @formatter:off
         http.antMatcher("/**").authorizeRequests() // <3>
-                .antMatchers( "/", "/app.js", "/login**", "/webjars/**
-                	").permitAll().anyRequest()
-                .authenticated().and().logout().logoutSuccessUrl("/").permitAll()
-                    .and().csrf()
+                .antMatchers( "/", "/app.js", "/login**", "/webjars/**").permitAll().anyRequest()
+                .authenticated().and().logout().logoutSuccessUrl("/").permitAll().and().csrf()
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse());
     // @formatter:on
  }
